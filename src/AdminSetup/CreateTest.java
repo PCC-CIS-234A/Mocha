@@ -6,8 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * @author Becky
+ * @author Rebecca Kennedy
  * @version 4/23/2018.
+ *Description: This GUI allows the admin to add the items that will make up a test.
  */
 public class CreateTest {
     private JPanel rootPanel;
@@ -16,13 +17,16 @@ public class CreateTest {
     private JScrollPane itemScrollPane;
     private JList itemList;
     private JButton cancelButton;
-    private JButton finishButton;
+    private JButton finishButton; //Doesn't do anything yet
 
     public CreateTest() {
         rootPanel.setPreferredSize(new Dimension(300, 200));
         finishButton.setEnabled(false);
 
         DefaultListModel listModel = new DefaultListModel();
+
+        itemTextField.setText(null);
+        itemTextField.requestFocusInWindow();
 
         addButton.addActionListener(new ActionListener() {
             @Override
@@ -61,6 +65,12 @@ public class CreateTest {
 
                 itemTextField.setText(null);
                 itemTextField.requestFocusInWindow();
+            }
+        });
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SetupTest.showChooseActionOnTest();
             }
         });
     }
