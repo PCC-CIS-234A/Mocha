@@ -1,3 +1,5 @@
+package UserTakingTest;
+
 /**
  * Class to hold an item pairing and win code
  *

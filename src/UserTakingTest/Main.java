@@ -1,3 +1,7 @@
+package UserTakingTest;
+
+import UserTakingTest.GUI;
+
 import javax.swing.*;
 import java.util.ArrayList;
 import static javax.swing.SwingUtilities.invokeLater;
