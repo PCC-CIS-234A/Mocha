@@ -4,16 +4,18 @@ import java.util.ArrayList;
 
 /**
  * Class for Test Logic
+ * @author Liz Goltz
+ * @version
  */
 public class Test
 {
     private int sessionID;
     private String userName;
     private int collectionID;
-    private Item item; //do I need this?
-    private Collection mCollection;
-    private ItemPair mItemPair;
-    private ArrayList<ItemPair> testQuestions;
+    private UserTakingTest.Item item; //do I need this?
+    private UserTakingTest.Collection mCollection;
+    private UserTakingTest.ItemPair mItemPair;
+    private ArrayList<UserTakingTest.ItemPair> testQuestions;
 
 //?What do I need to define in my constructor here?
     public Test(int sessionID, String userName, int collectionID) {
@@ -22,7 +24,7 @@ public class Test
         this.collectionID = collectionID;
     }
 
-    public Collection getCollection() { return mCollection; }
+    public UserTakingTest.Collection getCollection() { return mCollection; }
 
  /*   public void setCollection(ArrayList<Item> collection) {
         this.mCollection = new Collection();
@@ -31,12 +33,12 @@ public class Test
         this.mCollection.setItems(items);
     }
 */
-    public ArrayList<ItemPair> getTestQuestions() {
+    public ArrayList<UserTakingTest.ItemPair> getTestQuestions() {
         return testQuestions;
     }
 
-    public void setTestQuestions(Collection collection) {
-        ArrayList<Item> testItems = new ArrayList();
+    public void setTestQuestions(UserTakingTest.Collection collection) {
+        ArrayList<UserTakingTest.Item> testItems = new ArrayList();
         testItems = collection.getItems();
     }
 
