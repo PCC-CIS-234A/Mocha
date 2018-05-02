@@ -1,5 +1,7 @@
+package UserLogin;
+
 import java.sql.*;
-import java.util.ArrayList;
+
 
 /**
  * @author Anh Nguyen
@@ -34,7 +36,7 @@ public class Database {
         connect();
 
 
-        String query = "INSERT INTO UserAccount (UserName,Password,Email) VALUES" +
+        String query = "INSERT INTO USERACCOUNT (UserName,Password,Email) VALUES" +
                 "('" +user.getmyUserName()+"', '"+user.getmyPassword()+"', '" +user.getmyEmail()+"');";
         try {
             s = myConnection.createStatement();
@@ -54,7 +56,7 @@ public class Database {
         System.out.println(email);
         System.out.println(password);
         connect();
-        String query = "SELECT * FROM UserAccount WHERE Email= '"+email+"' and Password= '"+password+"'";
+        String query = "SELECT * FROM USERACCOUNT WHERE Email= '"+email+"' and Password= '"+password+"'";
         System.out.println(query);
         try {
 
