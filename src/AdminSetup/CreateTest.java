@@ -23,16 +23,22 @@ public class CreateTest {
     private JPanel nameTestPanel;
     private JButton checkTestNameButton;
     private JTextField testNameTextField;
+    private JLabel confirmTestNameJLabel;
+    private JLabel uniqueItemJLabel;
+    private DefaultListModel listModel;
 
     public CreateTest() {
       /*  rootPanel.setPreferredSize(new Dimension(300, 200)); OLD SIZE*/
-        rootPanel.setPreferredSize(new Dimension(600, 300));
+        rootPanel.setPreferredSize(new Dimension(600, 350));
         finishButton.setEnabled(false);
         /*actionButtonPanel.setBorder(BorderFactory.createLineBorder(Color.gray));*/
         nameTestPanel.setBorder(BorderFactory.createTitledBorder("Name Test"));
         addItemPanel.setBorder(BorderFactory.createTitledBorder("Add Items"));
 
-        DefaultListModel listModel = new DefaultListModel();
+        confirmTestNameJLabel.setVisible(false);
+//        uniqueItemJLabel.setVisible(false);
+
+        listModel = new DefaultListModel();
 
         itemTextField.setText(null);
         itemTextField.requestFocusInWindow();
@@ -40,7 +46,7 @@ public class CreateTest {
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                listModel.addElement(itemTextField.getText());
+                addUniqueItem();
 
                 //Enable Finish button if more than one item.
                 // Currently, if Add is clicked or the enter key is hit
@@ -60,7 +66,7 @@ public class CreateTest {
         itemTextField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                listModel.addElement(itemTextField.getText());
+                addUniqueItem();
 
                 //Enable Finish button if more than one item.
                 // Currently, if Add is clicked or the enter key is hit
@@ -85,7 +91,7 @@ public class CreateTest {
         finishButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //checkTestName(name);
+                checkTestName();
                 /*
                 ArrayList<Test> tests = Test.getTests();
                 for (Test t: tests) {
@@ -97,21 +103,49 @@ public class CreateTest {
         checkTestNameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String name = testNameTextField.getText();
-                int success = checkTestName(name);
-                if (success == -1) {
-                    System.out.println("There is already a test named " + testNameTextField.getText());
-                } else if (success == 0) {
-                    System.out.println("That's a good name!");
-                } else {
-                    System.out.println("There was a problem when checking the test name.");
-                }
+                checkTestName();
             }
         });
     }
 
+    public void addUniqueItem() {
+        Object[] objects = listModel.toArray();
 
-    public int checkTestName(String name) {
+        String suggestedItem = itemTextField.getText();
+        if(listModel.isEmpty()) {
+            listModel.addElement(suggestedItem);
+            uniqueItemJLabel.setText("That item should work!");
+        } else {
+            int unique = 1;
+            for (Object obj: objects) {
+                if(suggestedItem.equals(obj.toString())) {
+                  //  System.out.println("That item has already been entered");
+                    uniqueItemJLabel.setText(suggestedItem + " has already been entered ");
+//                    uniqueItemJLabel.setVisible(true);
+                    unique = 0;
+                }
+            }
+            if (unique == 1) {
+//                uniqueItemJLabel.setVisible(false);
+                uniqueItemJLabel.setText("That item should work!");
+                listModel.addElement(suggestedItem);
+            }
+        }
+    }
+
+    public void checkTestName() {
+        String name = testNameTextField.getText();
+        int success = compareTestNames(name);
+        if (success == -1) {
+            updateTestNameLabel("There is already a test named " + testNameTextField.getText());
+        } else if (success == 0) {
+            updateTestNameLabel("That's a good name!");
+        } else {
+            System.out.println("There was a problem when checking the test name.");
+        }
+    }
+
+    public int compareTestNames(String name) {
         ArrayList<Test> tests = Test.getTestWithName(name);
         for(Test t: tests) {
             if(t.getName() != null) {
@@ -123,6 +157,26 @@ public class CreateTest {
         return 0;
     }
 
+    public void updateTestNameLabel(String text) {
+        confirmTestNameJLabel.setText(null);
+
+        Timer t = new Timer(1500, new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                confirmTestNameJLabel.setText(text);
+                confirmTestNameJLabel.setVisible(true);
+            }
+        });
+        t.setRepeats(false);
+        t.start();
+
+    }
+/*
+    public Array getSuggestedItems() {
+        listModel.toArray();
+    }
+*/
     public JPanel getRootPanel() {
         return rootPanel;
     }
