@@ -1,45 +1,62 @@
 package UserTakingTest;
 
 import java.util.ArrayList;
-
+ 
 /**
  * Class for Test Logic
  * @author Liz Goltz
- * @version
+ * @version 4/3/2018
  */
 public class Test
 {
     private int sessionID;
     private String userName;
     private int collectionID;
-    private UserTakingTest.Item item; //do I need this?
-    private UserTakingTest.Collection mCollection;
-    private UserTakingTest.ItemPair mItemPair;
+    private ArrayList<String> mCollection;
     private ArrayList<UserTakingTest.ItemPair> testQuestions;
 
-//?What do I need to define in my constructor here?
+    //?What do I need to define in my constructor here?
     public Test(int sessionID, String userName, int collectionID) {
         this.sessionID = sessionID;
         this.userName = userName;
         this.collectionID = collectionID;
     }
 
-    public UserTakingTest.Collection getCollection() { return mCollection; }
+    public ArrayList<String> getCollection() { return mCollection; }
 
- /*   public void setCollection(ArrayList<Item> collection) {
-        this.mCollection = new Collection();
+    public void setCollection(int collectionID) {
+        this.mCollection = new ArrayList<>();
         MochaDB db = new MochaDB(); //do I need do declare this as a field?
-        ArrayList items = db.readItems(this.collectionID);
-        this.mCollection.setItems(items);
+        this.mCollection = db.readItems(this.collectionID);
     }
-*/
+
+    /**
+     * Method to create a list of test questions of all the unique pairings from a list of items
+     * @param items a list of items
+     * @return testQuestions a list of item pairs /test questions
+     */
+    //?should I set this as private?
+    public ArrayList<UserTakingTest.ItemPair> makeTestQuestions (ArrayList<String> items) {
+        testQuestions = new ArrayList<ItemPair>();
+        //for each item in the ArrayList of items, create a pairing with all subsequent items
+        for (String item : items) {
+            //declare & create a temp arraylist of subsequent item names
+            ArrayList<String> temp = new ArrayList<>();
+            temp.addAll(items.indexOf(item+1), items);
+            for (String tempItem : temp) {
+                ItemPair question = new ItemPair(item, tempItem);
+                testQuestions.add(question);
+            }
+        }
+        return testQuestions;
+    }
+
     public ArrayList<UserTakingTest.ItemPair> getTestQuestions() {
         return testQuestions;
     }
 
-    public void setTestQuestions(UserTakingTest.Collection collection) {
-        ArrayList<UserTakingTest.Item> testItems = new ArrayList();
-        testItems = collection.getItems();
+    public void setTestQuestions(ArrayList<String> mCollection) {
+        this.testQuestions = makeTestQuestions(mCollection);
     }
 
     public int getSessionID() { return sessionID; }

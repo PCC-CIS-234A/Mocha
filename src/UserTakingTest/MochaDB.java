@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Class to communicate with Mocha Database
  * @author Liz Goltz
- * @version
+ * @version 4/2/2018
  */
 public class MochaDB {
     //access database
@@ -23,6 +23,8 @@ public class MochaDB {
     private static final String ITEMS = "SELECT Name FROM ITEM WHERE CollectionID = ?";//read items into ArrayList
     private static final String SESSION_ID = "SELECT TOP SessionID FROM ";
     private static String input;
+
+    //
 
     private void connect() {
         if (mConnection != null)
@@ -40,30 +42,44 @@ public class MochaDB {
      * Read in a list of items from a specific collection
      * @return list of items
      */
-
- /*   public ArrayList<Item> readItems(int collectionID)
-   {
-        ArrayList<Item> items = new ArrayList<>();
+    public ArrayList<String> readItems(int collectionID)
+    {
+        ArrayList<String> items = new ArrayList<>();
         connect();
-        String query = "SELECT * from Item i RIGHT OUTER JOIN ON ItemCollection ic WHERE i.ItemID = ic.ItemID AND ic.ItemCollectionID = ?";
-        try (
-                PreparedStatement stmt = mConnection.prepareStatement(query);
-                stmt.setInt(1, collectionID);
-                ResultSet rs = stmt.executeQuery();
-            ) {
+        String query = "SELECT ITEM.Name from ITEM WHERE TestID = ?";
+        try {
+
+            PreparedStatement stmt = mConnection.prepareStatement(query);
+            stmt.setInt(1, collectionID);
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                Item i = new Item(
-                    rs.getInt("ItemID"),
-                    rs.getString("Name"));
-                 items.add(i);
+                items.add(rs.getString("Name"));
             }
             return items;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
-    }*/
+    }
 
+    /**
+     * Update/save item pairing and test question result in the database
+     * @param item1 string name of item1
+     * @param item2 string name of item2
+     * @param winCode integer win code (0=tie 1=item1 2=item2)
+     */
+
+    public void insertItem(int SessionID, String item1, String item2, int winCode) {
+        connect();
+        String query = "INSERT INTO RESULT (SessionID, Item1, Item2, ResultCode) VALUES (?" + SessionID + ", " + item1 + ", " + item2 + ", " + winCode + ")";
+
+        try {
+            PreparedStatement stmt = mConnection.prepareStatement(query);
+            stmt.setInt(1, SessionID);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void close() {
         if (mConnection != null) {
