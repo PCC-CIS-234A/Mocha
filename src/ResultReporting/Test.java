@@ -10,10 +10,10 @@ import java.util.Date;
  */
 public class Test {
     private ArrayList<Item> items;
-    private String sessionID;
+    private int sessionID;
     private Date date;
 
-    public Test(ArrayList<Item> items, String sessionID, Date date) {
+    public Test(ArrayList<Item> items, int sessionID, Date date) {
         this.items = new ArrayList<>();
         for (Item i : items) {
             this.items.add(i);
@@ -24,10 +24,17 @@ public class Test {
         this.date = date;
     }
 
+    /**
+     * sorts items by rank
+     */
     private void sortItems() {
         //item sorting code here
     }
 
+    /**
+     * gets the ArrayList of item objects
+     * @return the ArrayList of item objects
+     */
     public ArrayList<Item> getItems() {
         return items;
     }

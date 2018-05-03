@@ -13,7 +13,7 @@ import java.util.Vector;
 
 /**
  * @author Bobby Puckett
- * @version 4/25/2018
+ * @version 5/1/2018
  * Description: Provides a way to communicate with the ResultScores GUI
  */
 public class ResultScoresForm {
@@ -32,7 +32,7 @@ public class ResultScoresForm {
     private ArrayList<User> users;
 
     public ResultScoresForm(ArrayList<User> users) {
-        resultScoresPanel.setPreferredSize(new Dimension(600,400));
+        resultScoresPanel.setPreferredSize(new Dimension(600, 400));
 
         //dimensions for sprint 2
         //resultScoresPanel.setPreferredSize(new Dimension(800,400));
@@ -42,10 +42,14 @@ public class ResultScoresForm {
         initializeTestList();
         initializeResultsTable();
         initializeUserComboBox();
+
+        initializeFinishButton();
     }
+
 
     /**
      * This method adds a test to the testList
+     *
      * @param testName the name of the test to be added
      */
     public void addTest(String testName) {
@@ -54,19 +58,25 @@ public class ResultScoresForm {
 
     /**
      * This method adds a row to the resultsTable
+     *
      * @param item the item to be added
      */
     public void addResultItem(Item item) {
         resultsTableModel.addRow(item.createRowData());
     }
 
-    private void repopulateResultTable(User selectedItem) {
-        int rowcount = resultsTableModel.getRowCount();
-        for (int i = 0; i < rowcount; i++) {
+    /**
+     * deletes and reinstantiates the ResultTable
+     *
+     * @param selectedUser the user to get tests to repopulate the table from
+     */
+    private void repopulateResultTable(User selectedUser) {
+        int rowCount = resultsTableModel.getRowCount();
+        for (int i = 0; i < rowCount; i++) {
             resultsTableModel.removeRow(0);
         }
 
-        Test test = selectedItem.getTests().get(0);
+        Test test = selectedUser.getTests().get(0);
 
         for (Item i : test.getItems()) {
             addResultItem(i);
@@ -85,7 +95,7 @@ public class ResultScoresForm {
     }
 
     /**
-     * keeps the constructor short by inistializing the resultsTable
+     * keeps the constructor short by initializing the resultsTable
      */
     private void initializeResultsTable() {
         resultsTableModel = new DefaultTableModel();
@@ -99,7 +109,15 @@ public class ResultScoresForm {
         resultsTable.setModel(resultsTableModel);
     }
 
+    /**
+     * keeps the constructor short by initializing the userComboBox.
+     *
+     * Suppressing the unchecked warning because I'm using a non-primitive data type
+     * and adding it to the ComboBox
+     */
+    @SuppressWarnings("unchecked")
     private void initializeUserComboBox() {
+
         for (User u : users) {
             userComboBox.addItem(u);
         }
@@ -109,10 +127,24 @@ public class ResultScoresForm {
         });
 
         repopulateResultTable((User) userComboBox.getSelectedItem());
+
+    }
+
+    /**
+     * keeps the constructor short by initializing the finishButton
+     */
+    private void initializeFinishButton() {
+        finishButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
     }
 
     /**
      * Getter for resultScoresPanel
+     *
      * @return the resultScoresPanel
      */
     public JPanel getResultScoresPanel() {

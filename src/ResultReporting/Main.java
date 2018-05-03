@@ -8,22 +8,20 @@ import javax.swing.*;
 public class Main {
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> createAndShowGui());
+        //this line demonstrates the database
+        Database database = new Database();
+
+        //this line demonstrates the GUI
+        SwingUtilities.invokeLater(Main::createAndShowGui);
     }
 
+    /**
+     * creates and shows the GUI
+     */
     public static void createAndShowGui() {
         //results pane
         JFrame frame  = new JFrame("Result Scores");
         ResultScoresForm resultScoresForm = new ResultScoresForm(new DatabaseConnectionResults().getUsers());
-
-
-        //testing the form
-//        resultScoresForm.addTest("thing!");
-//        resultScoresForm.addTest("Other!");
-//
-//        Item testItem = new Item("Green", 12, 0, 0);
-//        resultScoresForm.addResultItem(testItem);
-        //testing the form END
 
         frame.getContentPane().add(resultScoresForm.getResultScoresPanel());
         frame.setVisible(true);

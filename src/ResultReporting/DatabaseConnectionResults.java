@@ -23,7 +23,7 @@ public class DatabaseConnectionResults {
         itemList.add(new Item("Blue", 1,3,0));
         itemList.add(new Item("Brown", 0,4,0));
 
-        Test test = new Test(itemList, "1.a", new Date());
+        Test test = new Test(itemList, 1, new Date());
 
         users.get(0).getTests().add(test);
 
@@ -34,12 +34,43 @@ public class DatabaseConnectionResults {
         itemList.add(new Item("Red", 1,3,0));
         itemList.add(new Item("Blue", 0,4,0));
 
-        test = new Test(itemList, "2.b", new Date());
+        test = new Test(itemList, 2, new Date());
 
         users.get(1).getTests().add(test);
     }
 
+    /**
+     * gets the ArrayList of users
+     * @return the ArrayList of users
+     */
     public ArrayList<User> getUsers() {
         return users;
     }
+
+//    private void interpretResults(User user) {
+//        ArrayList<Result> results = getResults(user);
+//        Item itemOne;
+//        Item itemTwo;
+//
+//        for (Result result: results ) {
+//            itemOne = getItem(result.getItemOne);
+//            itemTwo = getItem(result.getItemTwo);
+//
+//            switch(result.getResultCode()) {
+//                case 1:
+//                    itemOne.addWin();
+//                    itemTwo.addLoss();
+//                    break;
+//                case 2:
+//                    itemOne.addLoss();
+//                    itemTwo.addWin();
+//                    break;
+//                case 3:
+//                    itemOne.addTie();
+//                    itemTwo.addTie();
+//                    break;
+//            }
+//
+//        }
+//    }
 }

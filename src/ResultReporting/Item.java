@@ -3,10 +3,19 @@ package ResultReporting;
 import java.util.Vector;
 
 public class Item {
+    private int itemID;
     private String name;
     private int wins;
     private int losses;
     private int ties;
+
+    public Item(int itemID, String name, int wins, int losses, int ties) {
+        this.itemID = itemID;
+        this.name = name;
+        this.wins = wins;
+        this.losses = losses;
+        this.ties = ties;
+    }
 
     public Item(String name, int wins, int losses, int ties) {
         this.name = name;
@@ -29,6 +38,25 @@ public class Item {
         rowData.add(String.valueOf(ties));
 
         return rowData;
+    }
+
+    public void addWin() {
+        wins++;
+    }
+
+    public void addLoss() {
+        losses++;
+    }
+    public void addTie() {
+        ties++;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getItemID() {
+        return itemID;
     }
 
     /**
