@@ -12,7 +12,7 @@ public class Database {
     private static final String SERVER = "cisdbss.pcc.edu";
     private static final String USERNAME = "234a_Mocha"; //?is this the user taking test?
     private static final String PASSWORD = "@#$Mocha";
-    private static final String CONNECTION_STRING = "jdbc:jtds:sqlserver://" + SERVER + ";user=" + USERNAME + ";password=" + PASSWORD;
+    private static final String CONNECTION_STRING = "jdbc:jtds:sqlserver://" + SERVER + "/" + MOCHA_DB + ";user=" + USERNAME + ";password=" + PASSWORD;
     private Connection mConnection = null;
 
     /**
