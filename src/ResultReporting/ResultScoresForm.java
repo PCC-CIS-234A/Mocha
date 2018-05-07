@@ -1,10 +1,9 @@
 package ResultReporting;
 
-import javax.print.DocFlavor;
+import SharedLogic.*;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,9 +28,9 @@ public class ResultScoresForm {
 
     private Vector<String> testListVector;
     private DefaultTableModel resultsTableModel;
-    private ArrayList<User> users;
+    private ArrayList<UserAccount> users;
 
-    public ResultScoresForm(ArrayList<User> users) {
+    public ResultScoresForm(ArrayList<UserAccount> users) {
         resultScoresPanel.setPreferredSize(new Dimension(600, 400));
 
         //dimensions for sprint 2
@@ -50,44 +49,65 @@ public class ResultScoresForm {
     /**
      * This method adds a test to the testList
      *
-     * @param testName the name of the test to be added
+     * @param test the test object to be added
      */
-    public void addTest(String testName) {
-        testListVector.add(testName);
+    public void addTest(Test test) {
+        testListVector.add(test.getMyName());
     }
 
     /**
      * This method adds a row to the resultsTable
      *
-     * @param item the item to be added
+     * @param reportingItem the reportingItem to be added
      */
-    public void addResultItem(Item item) {
-        resultsTableModel.addRow(item.createRowData());
+    public void addReportingItem(ReportingItem reportingItem) {
+        Vector<String> rowData = new Vector<>();
+
+        rowData.add(String.valueOf(reportingItem.getMyItemID()));
+        rowData.add(reportingItem.getMyName());
+        rowData.add(String.valueOf(reportingItem.getWins()));
+        rowData.add(String.valueOf(reportingItem.getLosses()));
+        rowData.add(String.valueOf(reportingItem.getTies()));
+
+        resultsTableModel.addRow(rowData);
     }
 
     /**
-     * deletes and reinstantiates the ResultTable
+     * deletes and reinstanciates the ResultTable
      *
      * @param selectedUser the user to get tests to repopulate the table from
      */
-    private void repopulateResultTable(User selectedUser) {
+    private void repopulateResultTable(UserAccount selectedUser) {
         int rowCount = resultsTableModel.getRowCount();
+
         for (int i = 0; i < rowCount; i++) {
             resultsTableModel.removeRow(0);
         }
 
-        Test test = selectedUser.getTests().get(0);
+        ArrayList<TestSession> userTestSessions =TestSession.retrieveUserTestSessions(selectedUser);
+        TestSession testSession;
+        if (userTestSessions.size() > 0) {
+            testSession = userTestSessions.get(0);
+            ArrayList<ReportingItem> test = ReportingItem.retrieveReportingItemsOnTest(testSession.getMyTest().getMyTestID());
 
-        for (Item i : test.getItems()) {
-            addResultItem(i);
+            for (ReportingItem i : test) {
+                addReportingItem(i);
+            }
         }
+        else {
+            System.out.println("The user has no test sessions");
+        }
+
     }
+
+
 
     /**
      * keeps the constructor short by initializing the testList
      */
     private void initializeTestList() {
         testListVector = new Vector<>();
+        //@todo make sure this still works
         testList.setListData(testListVector);
 
         //disabling test pannel for first sprint
@@ -111,23 +131,22 @@ public class ResultScoresForm {
 
     /**
      * keeps the constructor short by initializing the userComboBox.
-     *
+     * <p>
      * Suppressing the unchecked warning because I'm using a non-primitive data type
      * and adding it to the ComboBox
      */
     @SuppressWarnings("unchecked")
     private void initializeUserComboBox() {
 
-        for (User u : users) {
+        for (UserAccount u : users) {
             userComboBox.addItem(u);
         }
 
         userComboBox.addActionListener(e -> {
-            repopulateResultTable((User) userComboBox.getSelectedItem());
+            repopulateResultTable((UserAccount) userComboBox.getSelectedItem());
         });
 
-        repopulateResultTable((User) userComboBox.getSelectedItem());
-
+        repopulateResultTable((UserAccount) userComboBox.getSelectedItem());
     }
 
     /**

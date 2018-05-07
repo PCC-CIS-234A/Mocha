@@ -4,15 +4,21 @@ package ResultReporting;
     // and create one of your own.
 
 import javax.swing.*;
+import java.util.ArrayList;
+import SharedLogic.Item;
+import SharedLogic.UserAccount;
 
-public class Main {
+
+public class ResultReportingStartup {
 
     public static void main(String[] args) {
         //this line demonstrates the database
-        Database database = new Database();
+        ArrayList<Item> items = Item.retrieveItems();
+
+        items.forEach(item -> System.out.println(item.getMyName()));
 
         //this line demonstrates the GUI
-        SwingUtilities.invokeLater(Main::createAndShowGui);
+        SwingUtilities.invokeLater(ResultReportingStartup::createAndShowGui);
     }
 
     /**
@@ -21,7 +27,7 @@ public class Main {
     public static void createAndShowGui() {
         //results pane
         JFrame frame  = new JFrame("Result Scores");
-        ResultScoresForm resultScoresForm = new ResultScoresForm(new DatabaseConnectionResults().getUsers());
+        ResultScoresForm resultScoresForm = new ResultScoresForm(UserAccount.retrieveAllUsers());
 
         frame.getContentPane().add(resultScoresForm.getResultScoresPanel());
         frame.setVisible(true);

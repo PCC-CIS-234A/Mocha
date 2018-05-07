@@ -1,3 +1,5 @@
+package UserLogin;
+
 /**
  * @author Anh Nguyen
  * @version 4/25/2018
@@ -10,7 +12,7 @@ public class UserAccount {
     private String myEmail;
     private String myRole;
 
-    public UserAccount(){}
+
     public UserAccount(String myUserName, String myPassword, String myEmail, String myRole){
         this.setmyUserName(myUserName);
         this.setmyPassword(myPassword);
