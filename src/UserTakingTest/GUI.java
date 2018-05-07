@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 /**
@@ -19,6 +20,7 @@ public class GUI
     private String item1;
     private String item2;
     private int winItem;
+    private ArrayList<ItemPair> testQuestions;
     private ButtonGroup radioGroup;
     private JRadioButton item1RadioButton;
     private JRadioButton item2RadioButton;
@@ -26,8 +28,41 @@ public class GUI
     private JButton nextButton;
     private JLabel itemCompareLabel;
 
-    public GUI(String item1, String item2)
-    {
+    public GUI(ArrayList<ItemPair> testQuestions) {
+        this.testQuestions = testQuestions;
+        for (ItemPair question : testQuestions) {
+            item1RadioButton.setText(question.getItem1());
+            item2RadioButton.setText(question.getItem2());
+            tieRadioButton.setText("tie");
+
+            rootPanel.setPreferredSize(new Dimension(300, 200));
+
+            ActionListener listener = new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)  {
+                    JRadioButton button = (JRadioButton) e.getSource();
+                    System.out.println("Got click on " + button.getText());
+                }
+            };
+
+            item1RadioButton.addActionListener(listener);
+            item2RadioButton.addActionListener(listener);
+            tieRadioButton.addActionListener(listener);
+
+            nextButton.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent)
+                {
+                    winItem = getSelectedButton(radioGroup);
+                    System.out.println(winItem);
+                //?How do I advance to next test question? call to Main to move to next testQuestion?
+                }
+            });
+        }
+    }
+
+/*    public GUI(String item1, String item2) {
         this.item1 = item1;
         this.item2 = item2;
         winItem = 0;
@@ -56,9 +91,10 @@ public class GUI
             {
                 winItem = getSelectedButton(radioGroup);
                 System.out.println(winItem);
+                //?How do I advance to next test question? call to Main to move to next testQuestion?
             }
         });
-    }
+    }*/
 
     /**
      * @param buttonGroup

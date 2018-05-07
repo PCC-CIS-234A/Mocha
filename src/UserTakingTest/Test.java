@@ -1,7 +1,8 @@
 package UserTakingTest;
 
 import java.util.ArrayList;
- 
+import java.util.List;
+
 /**
  * Class for Test Logic
  * @author Liz Goltz
@@ -15,11 +16,12 @@ public class Test
     private ArrayList<String> mCollection;
     private ArrayList<UserTakingTest.ItemPair> testQuestions;
 
-    //?What do I need to define in my constructor here?
     public Test(int sessionID, String userName, int collectionID) {
         this.sessionID = sessionID;
         this.userName = userName;
         this.collectionID = collectionID;
+        setCollection(collectionID);
+        this.testQuestions = makeTestQuestions(this.mCollection);
     }
 
     public ArrayList<String> getCollection() { return mCollection; }
@@ -39,12 +41,10 @@ public class Test
     public ArrayList<UserTakingTest.ItemPair> makeTestQuestions (ArrayList<String> items) {
         testQuestions = new ArrayList<ItemPair>();
         //for each item in the ArrayList of items, create a pairing with all subsequent items
-        for (String item : items) {
-            //declare & create a temp arraylist of subsequent item names
-            ArrayList<String> temp = new ArrayList<>();
-            temp.addAll(items.indexOf(item+1), items);
-            for (String tempItem : temp) {
-                ItemPair question = new ItemPair(item, tempItem);
+        for (int i = 0; i < items.size(); i++) {
+            for (int j = i+1; j < items.size(); j++) {
+                System.out.println(items.get(i) + " " + items.get(j));
+                ItemPair question = new ItemPair(items.get(i), items.get(j));
                 testQuestions.add(question);
             }
         }

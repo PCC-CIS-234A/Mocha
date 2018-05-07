@@ -16,15 +16,17 @@ public class MochaDB {
     private static final String USERNAME = "234a_Mocha"; //?is this the user taking test?
     private static final String PASSWORD = "@#$Mocha";
     private static final String CONNECTION_STRING = "jdbc:jtds:sqlserver://"
-            + SERVER + ";user=" + USERNAME + ";password=" + PASSWORD;
+            + SERVER + "/" + MOCHA_DB + ";user=" + USERNAME + ";password=" + PASSWORD;
     private Connection mConnection = null;
 
-    //database queries
+    int sessionID = 0; //initialized and set to 0 so program would run, not sure how to get or set sessionID
+
+    /*database queries -not sure if I need these
     private static final String ITEMS = "SELECT Name FROM ITEM WHERE CollectionID = ?";//read items into ArrayList
     private static final String SESSION_ID = "SELECT TOP SessionID FROM ";
     private static String input;
 
-    //
+    */
 
     private void connect() {
         if (mConnection != null)
@@ -69,15 +71,32 @@ public class MochaDB {
      * @param winCode integer win code (0=tie 1=item1 2=item2)
      */
 
-    public void insertItem(int SessionID, String item1, String item2, int winCode) {
+    public void insertItem(int sessionID, String item1, String item2, int winCode) {
         connect();
-        String query = "INSERT INTO RESULT (SessionID, Item1, Item2, ResultCode) VALUES (?" + SessionID + ", " + item1 + ", " + item2 + ", " + winCode + ")";
+        String query = "INSERT INTO RESULT (SessionID, Item1, Item2, ResultCode) VALUES (" + sessionID + ", " + item1 + ", " + item2 + ", " + winCode + ")";
 
         try {
             PreparedStatement stmt = mConnection.prepareStatement(query);
-            stmt.setInt(1, SessionID);
+            stmt.setInt(1, sessionID);
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Update/save ArrayList of test results
+     * @param testResults ArrayList of paired item names and result
+     */
+
+    public void insertResults (ArrayList<UserTakingTest.ItemPair> testResults) {
+        connect();
+        //for each ItemPair result in the arraylist
+        for (ItemPair result : testResults) {
+            String item1 = result.getItem1(); //?are these redundant, can I put them directly in String query assignment statment?
+            String item2 = result.getItem2();
+            int winItem = result.getWinItem();
+
+            insertItem(sessionID, item1, item2, winItem);
         }
     }
 
