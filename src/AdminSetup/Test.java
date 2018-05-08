@@ -7,8 +7,9 @@ import java.util.ArrayList;
  * @version 5/2/2018.
  */
 public class Test {
-//    private int myTestID;
+    private int myTestID;
     private String myName;
+    private boolean editable = true;
 
   //  Test (int testID, String name) {
     Test (String name) {
@@ -16,26 +17,41 @@ public class Test {
         myName = name;
     }
 
- //   public int getTestID() {
-//        return myTestID;
- //   }
+    public int getTestID() {
+        return myTestID;
+    }
 
     public String getName() {
         return myName;
     }
 
- //   public void setTestID(int testID) {
- //       myTestID = testID;
- //   }
+    public boolean getEditable() {
+        return editable;
+    }
+
+
+    public void setTestID(int testID) {
+        myTestID = testID;
+    }
 
     public void setName(String name) {
         myName = name;
+    }
+
+    public void setEditable(boolean isEditable) {
+        editable = isEditable;
     }
 
     public static ArrayList<Test> getTests() {
         AdminSetupDB db = new AdminSetupDB();
         return db.getTests();
     }
+
+    /*
+    public static ArrayList<Test> getTakenTests() {
+        AdminSetupDB db = new AdminSetupDB();
+        return db.getTakenTests();
+    }*/
 
     public static ArrayList<Test> getTestWithName(String name) {
         AdminSetupDB db = new AdminSetupDB();

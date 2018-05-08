@@ -40,4 +40,12 @@ public class SetupTest {
         frame.pack();
         frame.setVisible(true);
     }
+
+    public static void showViewTest() {
+        frame.getContentPane().removeAll();
+        frame.setTitle("View Test");
+        frame.getContentPane().add(new ViewTest().getRootPanel());
+        frame.pack();
+        frame.setVisible(true);
+    }
 }

@@ -101,10 +101,17 @@ public class CreateTest {
                     items.add(obj.toString());
                 }
 
-                checkTestName(testName);
-                createTestWithItems(testName, items);
+            //    String suggestedItem = itemTextField.getText();
 
-                closeCreateTest();
+                    int i = checkTestName(testName);
+
+                    if(i == 1) {
+
+                        createTestWithItems(testName, items);
+
+                        closeCreateTest();
+                    }
+
 
                 /*
                 ArrayList<Test> tests = Test.getTests();
@@ -151,8 +158,11 @@ public class CreateTest {
 
         String suggestedItem = itemTextField.getText();
         if(listModel.isEmpty()) {
-            listModel.addElement(suggestedItem);
-            uniqueItemJLabel.setText("That item should work!");
+     //       if(!suggestedItem.equals("")) {
+            if(suggestedItem.trim().length() > 0) {
+                listModel.addElement(suggestedItem);
+                uniqueItemJLabel.setText("That item should work!");
+            }
         } else {
             int unique = 1;
             for (Object obj: objects) {
@@ -165,22 +175,36 @@ public class CreateTest {
             }
             if (unique == 1) {
 //                uniqueItemJLabel.setVisible(false);
-                uniqueItemJLabel.setText("That item should work!");
-                listModel.addElement(suggestedItem);
+          //      if(!suggestedItem.equals("")) {
+                if(suggestedItem.trim().length() > 0) {
+                    uniqueItemJLabel.setText("That item should work!");
+                    listModel.addElement(suggestedItem);
+                }
             }
         }
     }
 
-    public void checkTestName(String name) {
+    public int checkTestName(String name) {
       //  String name = testNameTextField.getText();
-        int success = compareTestNames(name);
-        if (success == -1) {
-            updateTestNameLabel("There is already a test named " + testNameTextField.getText());
-        } else if (success == 0) {
-            updateTestNameLabel("That's a good name!");
+        int i = 0;
+    //    if(!name.equals("")) {
+        if(name.trim().length() > 0) {
+            int success = compareTestNames(name);
+            if (success == -1) {
+                updateTestNameLabel("There is already a test named " + testNameTextField.getText());
+                i = 0;
+            } else if (success == 0) {
+                updateTestNameLabel("That's a good name!");
+                i = 1;
+            } else {
+                System.out.println("There was a problem when checking the test name.");
+                i = -1;
+            }
         } else {
-            System.out.println("There was a problem when checking the test name.");
+            updateTestNameLabel("Please enter a test name.");
+            i = -1;
         }
+        return i;
     }
 
     public int compareTestNames(String name) {
