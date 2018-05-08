@@ -32,10 +32,6 @@ public class Main {
         mFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //  showNewTest()
         showItemCompare(mTestQuestions);
-
-       /* for (ItemPair question : mTestQuestions) {
-            showItemCompare(question.getItem1(), question.getItem2());
-        }*/
     }
 
 /*    //?should this return an int winCode value?

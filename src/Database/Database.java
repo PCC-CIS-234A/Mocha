@@ -52,14 +52,14 @@ public class Database {
      * Closes connection to the database
      */
     public void close() {
-            if (mConnection != null) {
-                System.out.println("Closing database connection.");
-                try {
-                    mConnection.close();
-                }
-                catch (SQLException e) {
-                    e.printStackTrace();
-                }
+        if (mConnection != null) {
+            System.out.println("Closing database connection.");
+            try {
+                mConnection.close();
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
             }
         }
+    }
 }

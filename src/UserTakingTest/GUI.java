@@ -20,6 +20,7 @@ public class GUI
     private String item1;
     private String item2;
     private int winItem;
+    private int position = 0;
     private ArrayList<ItemPair> testQuestions;
     private ButtonGroup radioGroup;
     private JRadioButton item1RadioButton;
@@ -30,13 +31,13 @@ public class GUI
 
     public GUI(ArrayList<ItemPair> testQuestions) {
         this.testQuestions = testQuestions;
-        for (ItemPair question : testQuestions) {
+/*        for (ItemPair question : testQuestions) {
             item1RadioButton.setText(question.getItem1());
             item2RadioButton.setText(question.getItem2());
-            tieRadioButton.setText("tie");
+            tieRadioButton.setText("tie");*/
 
             rootPanel.setPreferredSize(new Dimension(300, 200));
-
+            displayQuestion();
             ActionListener listener = new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e)  {
@@ -56,11 +57,31 @@ public class GUI
                 {
                     winItem = getSelectedButton(radioGroup);
                     System.out.println(winItem);
-                //?How do I advance to next test question? call to Main to move to next testQuestion?
+                    testQuestions.get(position).setWinItem(winItem);
+                    nextQuestion();
                 }
             });
+    }
+
+
+    private void displayQuestion() {
+        ItemPair currentQuestion = testQuestions.get(position);
+        radioGroup.clearSelection();
+        item1RadioButton.setText(currentQuestion.getItem1());
+        item2RadioButton.setText(currentQuestion.getItem2());
+        tieRadioButton.setText("tie");
+
+    }
+
+    private void nextQuestion() {
+        position = position + 1;
+        if (position > testQuestions.size()) {
+
+        } else {
+            displayQuestion();
         }
     }
+
 
 /*    public GUI(String item1, String item2) {
         this.item1 = item1;
