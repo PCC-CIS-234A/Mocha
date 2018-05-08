@@ -21,7 +21,6 @@ public class GUI
     private String item2;
     private int winItem;
     private int position = 0;
-    private ArrayList<ItemPair> testQuestions;
     private ButtonGroup radioGroup;
     private JRadioButton item1RadioButton;
     private JRadioButton item2RadioButton;
@@ -29,73 +28,27 @@ public class GUI
     private JButton nextButton;
     private JLabel itemCompareLabel;
 
-    public GUI(ArrayList<ItemPair> testQuestions) {
-        this.testQuestions = testQuestions;
-/*        for (ItemPair question : testQuestions) {
-            item1RadioButton.setText(question.getItem1());
-            item2RadioButton.setText(question.getItem2());
-            tieRadioButton.setText("tie");*/
+    private static String mItem1 = "";
+    private static String mItem2 = "";
+    private static int mWin = 0;
 
-            rootPanel.setPreferredSize(new Dimension(300, 200));
-            displayQuestion();
-            ActionListener listener = new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e)  {
-                    JRadioButton button = (JRadioButton) e.getSource();
-                    System.out.println("Got click on " + button.getText());
-                }
-            };
+    private static int mCollectionID = 1;
+    private static String mTestName = "";
+    private static String mUserName = "";
+    private static int mSessionID = 0;
 
-            item1RadioButton.addActionListener(listener);
-            item2RadioButton.addActionListener(listener);
-            tieRadioButton.addActionListener(listener);
+    private static Test mTest;
+    private static ArrayList<ItemPair> mTestQuestions;
 
-            nextButton.addActionListener(new ActionListener()
-            {
-                @Override
-                public void actionPerformed(ActionEvent actionEvent)
-                {
-                    winItem = getSelectedButton(radioGroup);
-                    System.out.println(winItem);
-                    testQuestions.get(position).setWinItem(winItem);
-                    nextQuestion();
-                }
-            });
-    }
-
-
-    private void displayQuestion() {
-        ItemPair currentQuestion = testQuestions.get(position);
-        radioGroup.clearSelection();
-        item1RadioButton.setText(currentQuestion.getItem1());
-        item2RadioButton.setText(currentQuestion.getItem2());
-        tieRadioButton.setText("tie");
-
-    }
-
-    private void nextQuestion() {
-        position = position + 1;
-        if (position > testQuestions.size()) {
-
-        } else {
-            displayQuestion();
-        }
-    }
-
-
-/*    public GUI(String item1, String item2) {
-        this.item1 = item1;
-        this.item2 = item2;
-        winItem = 0;
-        item1RadioButton.setText(item1);
-        item2RadioButton.setText(item2);
-        tieRadioButton.setText("tie");
+    public GUI() {
+        mTest = new Test(mSessionID, mUserName, mCollectionID);
+        mTestQuestions = mTest.makeTestQuestions();
 
         rootPanel.setPreferredSize(new Dimension(300, 200));
-
+        displayQuestion();
         ActionListener listener = new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e)  {
+            public void actionPerformed(ActionEvent e) {
                 JRadioButton button = (JRadioButton) e.getSource();
                 System.out.println("Got click on " + button.getText());
             }
@@ -105,17 +58,37 @@ public class GUI
         item2RadioButton.addActionListener(listener);
         tieRadioButton.addActionListener(listener);
 
-        nextButton.addActionListener(new ActionListener()
-        {
+        nextButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent)
-            {
+            public void actionPerformed(ActionEvent actionEvent) {
                 winItem = getSelectedButton(radioGroup);
                 System.out.println(winItem);
-                //?How do I advance to next test question? call to Main to move to next testQuestion?
+                mTestQuestions.get(position).setWinItem(winItem);
+                nextQuestion();
             }
         });
-    }*/
+    }
+
+
+    private void displayQuestion() {
+        ItemPair currentQuestion = mTestQuestions.get(position);
+        radioGroup.clearSelection();
+        item1RadioButton.setText(currentQuestion.getItem1().getName());
+        item2RadioButton.setText(currentQuestion.getItem2().getName());
+        tieRadioButton.setText("tie");
+
+    }
+
+    private void nextQuestion() {
+        position = position + 1;
+        if (position >= mTestQuestions.size()) {
+            mTest.saveTestAnswers(mTestQuestions);
+            // You're done, exit the GUI.
+            Main.finished();
+        } else {
+            displayQuestion();
+        }
+    }
 
     /**
      * @param buttonGroup
@@ -168,6 +141,14 @@ public class GUI
     public void setWinItem(int winItem)
     {
         this.winItem = winItem;
+    }
+
+    public ArrayList<ItemPair> getTestQuestions() {
+        return mTestQuestions;
+    }
+
+    public void setTestQuestions(ArrayList<ItemPair> testQuestions) {
+        mTestQuestions = testQuestions;
     }
 
     public JPanel getRootPanel()

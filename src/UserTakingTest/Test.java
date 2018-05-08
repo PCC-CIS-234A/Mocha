@@ -13,50 +13,54 @@ public class Test
     private int sessionID;
     private String userName;
     private int collectionID;
-    private ArrayList<String> mCollection;
-    private ArrayList<UserTakingTest.ItemPair> testQuestions;
+    private ArrayList<Item> mCollection;
+    private ArrayList<ItemPair> testQuestions;
+    private MochaDB db;
 
     public Test(int sessionID, String userName, int collectionID) {
         this.sessionID = sessionID;
         this.userName = userName;
         this.collectionID = collectionID;
-        setCollection(collectionID);
-        this.testQuestions = makeTestQuestions(this.mCollection);
+        db = new MochaDB();
+        mCollection = db.readItems(collectionID);
     }
 
-    public ArrayList<String> getCollection() { return mCollection; }
+    public ArrayList<Item> getCollection() { return mCollection; }
 
     public void setCollection(int collectionID) {
-        this.mCollection = new ArrayList<>();
-        MochaDB db = new MochaDB(); //do I need do declare this as a field?
         this.mCollection = db.readItems(this.collectionID);
     }
 
     /**
      * Method to create a list of test questions of all the unique pairings from a list of items
-     * @param items a list of items
      * @return testQuestions a list of item pairs /test questions
      */
     //?should I set this as private?
-    public ArrayList<UserTakingTest.ItemPair> makeTestQuestions (ArrayList<String> items) {
+    public ArrayList<ItemPair> makeTestQuestions () {
+
         testQuestions = new ArrayList<ItemPair>();
         //for each item in the ArrayList of items, create a pairing with all subsequent items
-        for (int i = 0; i < items.size(); i++) {
-            for (int j = i+1; j < items.size(); j++) {
-                System.out.println(items.get(i) + " " + items.get(j));
-                ItemPair question = new ItemPair(items.get(i), items.get(j));
+
+        for (int i = 0; i < mCollection.size() - 1; i++) {
+            for (int j = i+1; j < mCollection.size(); j++) {
+                System.out.println(mCollection.get(i).getName() + " " + mCollection.get(j).getName());
+                ItemPair question = new ItemPair(mCollection.get(i), mCollection.get(j));
                 testQuestions.add(question);
             }
         }
         return testQuestions;
     }
 
-    public ArrayList<UserTakingTest.ItemPair> getTestQuestions() {
+    public void saveTestAnswers (ArrayList<ItemPair> results) {
+        db.saveResults(results);
+    }
+
+    public ArrayList<ItemPair> getTestQuestions() {
         return testQuestions;
     }
 
     public void setTestQuestions(ArrayList<String> mCollection) {
-        this.testQuestions = makeTestQuestions(mCollection);
+        this.testQuestions = makeTestQuestions();
     }
 
     public int getSessionID() { return sessionID; }

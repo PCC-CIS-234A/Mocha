@@ -19,7 +19,7 @@ public class MochaDB {
             + SERVER + "/" + MOCHA_DB + ";user=" + USERNAME + ";password=" + PASSWORD;
     private Connection mConnection = null;
 
-    int sessionID = 0; //initialized and set to 0 so program would run, not sure how to get or set sessionID
+    int sessionID = 2; //initialized and set to 0 so program would run, not sure how to get or set sessionID
 
     /*database queries -not sure if I need these
     private static final String ITEMS = "SELECT Name FROM ITEM WHERE CollectionID = ?";//read items into ArrayList
@@ -34,28 +34,28 @@ public class MochaDB {
         try {
             mConnection = DriverManager.getConnection(CONNECTION_STRING);
             System.out.println("Connected to database.");
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     /**
      * Read in a list of items from a specific collection
+     *
      * @return list of items
      */
-    public ArrayList<String> readItems(int collectionID)
-    {
-        ArrayList<String> items = new ArrayList<>();
+    public ArrayList<Item> readItems(int collectionID) {
+        ArrayList<Item> items = new ArrayList<>();
         connect();
-        String query = "SELECT ITEM.Name from ITEM WHERE TestID = ?";
+        String query = "SELECT ItemID, TestID, Name from ITEM WHERE TestID = ?";
         try {
 
             PreparedStatement stmt = mConnection.prepareStatement(query);
             stmt.setInt(1, collectionID);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                items.add(rs.getString("Name"));
+                Item item = new Item(rs.getInt("ItemID"), rs.getInt("TestID"), rs.getString("Name"));
+                items.add(item);
             }
             return items;
         } catch (SQLException e) {
@@ -66,18 +66,22 @@ public class MochaDB {
 
     /**
      * Update/save item pairing and test question result in the database
-     * @param item1 string name of item1
-     * @param item2 string name of item2
+     *
+     * @param item1ID ID of item1
+     * @param item2ID ID of item2
      * @param winCode integer win code (0=tie 1=item1 2=item2)
      */
-
-    public void insertItem(int sessionID, String item1, String item2, int winCode) {
+    public void insertResult(int sessionID, int item1ID, int item2ID, int winCode) {
         connect();
-        String query = "INSERT INTO RESULT (SessionID, Item1, Item2, ResultCode) VALUES (" + sessionID + ", " + item1 + ", " + item2 + ", " + winCode + ")";
+        String query = "INSERT INTO RESULT (SessionID, Item1, Item2, ResultCode) VALUES (?, ?, ?, ?)";
 
         try {
             PreparedStatement stmt = mConnection.prepareStatement(query);
             stmt.setInt(1, sessionID);
+            stmt.setInt(2, item1ID);
+            stmt.setInt(3, item2ID);
+            stmt.setInt(4, winCode);
+            stmt.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -85,18 +89,21 @@ public class MochaDB {
 
     /**
      * Update/save ArrayList of test results
+     *
      * @param testResults ArrayList of paired item names and result
      */
 
-    public void insertResults (ArrayList<UserTakingTest.ItemPair> testResults) {
+    public void saveResults(ArrayList<ItemPair> testResults) {
         connect();
         //for each ItemPair result in the arraylist
         for (ItemPair result : testResults) {
-            String item1 = result.getItem1(); //?are these redundant, can I put them directly in String query assignment statment?
-            String item2 = result.getItem2();
-            int winItem = result.getWinItem();
 
-            insertItem(sessionID, item1, item2, winItem);
+            insertResult(
+                    sessionID,
+                    result.getItem1().getItemID(),
+                    result.getItem2().getItemID(),
+                    result.getWinItem()
+            );
         }
     }
 
@@ -105,13 +112,14 @@ public class MochaDB {
             System.out.println("Closing database connection.");
             try {
                 mConnection.close();
-            }
-            catch (SQLException e) {
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
     }
 
     @Override
-    protected void finalize() { close(); }
+    protected void finalize() {
+        close();
+    }
 }
