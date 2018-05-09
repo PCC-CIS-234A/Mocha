@@ -24,24 +24,27 @@ public class EditTest {
     private JLabel uniqueItemJLabel;
     private ArrayList<Item> items;
     private DefaultListModel listModel;
+    private int myTestID;
 
-    public EditTest() {
-        rootPanel.setPreferredSize(new Dimension(600, 350));
+    public EditTest(int testID) {
+        myTestID = testID;
+
+        rootPanel.setPreferredSize(new Dimension(400, 300));
     //    finishButton.setEnabled(false);
         actionButtonPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
 
         listModel = new DefaultListModel();
 
        // ArrayList<Item> items = Item.getTestItems();
-        items = Item.getTestItems();
+        items = Item.getTestItems(myTestID);
 
         //Add all items to the list
         for(Item item: items) {
             //System.out.println(item.getTestID() + ": " + item.getName());
-     //       item.setTableAction(Item.TableAction.KEEP);
+            item.setTableAction(Item.TableAction.KEEP);
             listModel.addElement(item.getName());
-     //       System.out.println(item.getTestID() + ": " + item.getName() + "; " + item.getTableAction());
-            System.out.println(item.getTestID() + ": " + item.getName());
+            System.out.println(item.getTestID() + ": " + item.getName() + "; " + item.getTableAction());
+       //     System.out.println(item.getTestID() + ": " + item.getName());
         }
 
         enableFinishButton();
@@ -101,32 +104,43 @@ public class EditTest {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+/*
+                System.out.println("First group on delete:");
+                for(Item item: items) {
+                       // System.out.println("listModel.getElementAt(selectedIndex)" + listModel.getElementAt(selectedIndex));
+                        System.out.println(item.getTestID() + ": " + item.getName() + "; " + item.getTableAction());
+                }
+*/
                 if (itemList.isSelectionEmpty() == false) {
                     int selectedIndex = itemList.getSelectedIndex();
-                    Object obj = listModel.getElementAt(selectedIndex);
-                    String str = obj.toString();
-                    deleteItem(str);
+         //           Object obj = listModel.getElementAt(selectedIndex);
+        //            String str = obj.toString();
+         //           deleteItem(str);
 
 
-                /*
+
                 if(selectedIndex != -1) {
                     Object obj = listModel.getElementAt(selectedIndex);
                     String str= obj.toString();
 
                     //set the TableAction of the item being deleted
+                    System.out.println("Second group on delete:");
                     for(Item item: items) {
                         if(item.getName().equals(str)) {
                             item.setTableAction(Item.TableAction.DEL);
+                            System.out.println("listModel.getElementAt(selectedIndex)" + listModel.getElementAt(selectedIndex));
                             System.out.println(item.getTestID() + ": " + item.getName() + "; " + item.getTableAction());
                         }
                     }
                     listModel.remove(selectedIndex);
                 }
-*/
 
+                /*
+                    //Might need to remove below if statement
                     if (selectedIndex != -1) {
                         listModel.remove(selectedIndex);
                     }
+                    */
 
                     enableFinishButton();
 /*
@@ -149,12 +163,25 @@ public class EditTest {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                updateDBItems(items);
-                closeCreateTest();
+                boolean viewOnly = true;
+                for(Item item: items) {
+                    if (item.getTableAction() != Item.TableAction.KEEP) {
+                        viewOnly = false;
+                    }
+                }
+
+                if(viewOnly == false) {
+                    boolean success = updateDBItems(items);
+                    closeCreateTest(success);
+                    SetupTest.showChooseActionOnTest();
+                } else {
+                    SetupTest.showChooseActionOnTest();
+                }
             }
         });
     }
 
+    /*
     public void deleteItem(String str) {
     //  Item item = (Item) obj;
         int index = -1;
@@ -171,8 +198,9 @@ public class EditTest {
             System.out.println(i.getTestID() + ": " + i.getName());
         }
     }
+    */
 
-    public void addItem(String str) {
+    public void addItem(String suggestedItem) {
 /*
         Item newItem = new Item(1, str);
         items.add(newItem);
@@ -183,14 +211,16 @@ public class EditTest {
 
             Object[] objects = listModel.toArray();
 
-            String suggestedItem = itemTextField.getText();
+          //  String suggestedItem = itemTextField.getText();
             if(listModel.isEmpty()) {
   //              listModel.addElement(suggestedItem);
                 if(suggestedItem.trim().length() > 0) {
-                    Item newItem = new Item(1, str);
-                    items.add(newItem);
-                    listModel.addElement(itemTextField.getText());
-                uniqueItemJLabel.setText("That item should work!");
+       //             Item newItem = new Item(myTestID, str);
+      //              items.add(newItem);
+      //              listModel.addElement(itemTextField.getText());
+                    setupTableAction(suggestedItem);
+                    listModel.addElement(suggestedItem);
+                    uniqueItemJLabel.setText("That item should work!");
                 }
             } else {
                 int unique = 1;
@@ -205,12 +235,15 @@ public class EditTest {
                 if (unique == 1) {
 //                uniqueItemJLabel.setVisible(false);
                     if(suggestedItem.trim().length() > 0) {
+                     //   uniqueItemJLabel.setText("That item should work!");
+                      //              listModel.addElement(suggestedItem);
+                        setupTableAction(suggestedItem);
+                        listModel.addElement(suggestedItem);
                         uniqueItemJLabel.setText("That item should work!");
-                        //            listModel.addElement(suggestedItem);
 
-                        Item newItem = new Item(1, str);
-                        items.add(newItem);
-                        listModel.addElement(itemTextField.getText());
+               //         Item newItem = new Item(myTestID, str);
+               //         items.add(newItem);
+               //         listModel.addElement(itemTextField.getText());
                     }
                 }
             }
@@ -223,12 +256,12 @@ public class EditTest {
             System.out.println(item.getTestID() + ": " + item.getName());
         }
 
-        /*
+/*
         int isNew = 1;
 
         //set the TableAction of the item being added back in after previously being deleted
         for(Item item: items) {
-            if(str.equals(item.getName())) {
+            if(suggestedItem.equals(item.getName())) {
                 item.setTableAction(Item.TableAction.KEEP);
                 System.out.println("Edited item:");
                 System.out.println(item.getTestID() + ": " + item.getName() + "; " + item.getTableAction());
@@ -236,24 +269,53 @@ public class EditTest {
             }
         }
 
-        listModel.addElement(str);
+    //    listModel.addElement(suggestedItem);
 
         //add new item and set it to ins
         if(isNew == 1) {
             //testID is currently hardcoded to 1. Later it should be a variable for when there are multiple tests.
-            Item newItem = new Item(1, str);
+            Item newItem = new Item(myTestID, suggestedItem);
             newItem.setTableAction(Item.TableAction.INS);
             items.add(newItem);
             System.out.println("New item:");
             System.out.println(newItem.getTestID() + ": " + newItem.getName() + "; " + newItem.getTableAction());
         }
+*/
+
+     //   listModel.addElement(suggestedItem);
 
         System.out.println("All items:");
         for(Item item: items) {
             System.out.println(item.getTestID() + ": " + item.getName() + "; " + item.getTableAction());
         }
-        */
 
+
+    }
+
+    public void setupTableAction(String suggestedItem) {
+        int isNew = 1;
+
+        //set the TableAction of the item being added back in after previously being deleted
+        for(Item item: items) {
+            if(suggestedItem.equals(item.getName())) {
+                item.setTableAction(Item.TableAction.KEEP);
+                System.out.println("Edited item:");
+                System.out.println(item.getTestID() + ": " + item.getName() + "; " + item.getTableAction());
+                isNew = 0;
+            }
+        }
+
+        //    listModel.addElement(suggestedItem);
+
+        //add new item and set it to ins
+        if(isNew == 1) {
+            //testID is currently hardcoded to 1. Later it should be a variable for when there are multiple tests.
+            Item newItem = new Item(myTestID, suggestedItem);
+            newItem.setTableAction(Item.TableAction.INS);
+            items.add(newItem);
+            System.out.println("New item:");
+            System.out.println(newItem.getTestID() + ": " + newItem.getName() + "; " + newItem.getTableAction());
+        }
     }
 
     //Enable Finish button if more than one item.
@@ -280,16 +342,88 @@ public class EditTest {
     }
 
 
-    public void updateDBItems(ArrayList<Item> items) {
+ /*   public boolean updateDBItems(ArrayList<Item> items) {
         AdminSetupDB db = new AdminSetupDB();
-        db.mergeItems(items);
+        boolean success = db.mergeItems(items, myTestID);
+        return success;
+    }
+*/
+
+/*
+    public boolean updateDBItems(ArrayList<Item> items) {
+        AdminSetupDB db = new AdminSetupDB();
+        ArrayList<Item> itemsInDB = db.getTestItems(myTestID);
+        for(Item item: items) {
+            boolean holds = itemsInDB.contains(item);
+            System.out.println("itemsInDB.contains(dbItem): " + item.getName() + ": " + holds);
+        }
+
+
+        System.out.println("Item names in DB:");
+        for(Item item: itemsInDB) {
+            System.out.println(item.getName() + ": " + itemsInDB.contains(item));
+        }
+
+        //change this to return boolean(s) from db class
+        return true;
+
+    }
+*/
+
+
+    public boolean updateDBItems(ArrayList<Item> items) {
+        ArrayList<Item> toDelete = new ArrayList<>();
+        ArrayList<Item> toInsert = new ArrayList<>();
+
+
+        for (Item item: items) {
+            if(item.getTableAction() == Item.TableAction.DEL) {
+                System.out.println("Deleting " + item.getName());
+                toDelete.add(item);
+            } else if(item.getTableAction() == Item.TableAction.INS) {
+                System.out.println("Inserting " + item.getName());
+                toInsert.add(item);
+            }
+        }
+
+        /*
+        for (Item item: items) {
+            if (item.getTableAction() == Item.TableAction.KEEP) {
+                System.out.println("Deleting " + item.getName());
+                toDelete.add(item);
+            }
+        }
+        */
+
+        boolean success = false;
+        if(toDelete.isEmpty() == false) {
+            AdminSetupDB db = new AdminSetupDB();
+            success = db.deleteItems(toDelete);
+        }
+/*
+        for (Item item: items) {
+            if(item.getTableAction() == Item.TableAction.INS) {
+                System.out.println("Inserting " + item.getName());
+                toInsert.add(item);
+            }
+        }
+  */
+        if(toInsert.isEmpty() == false) {
+            AdminSetupDB db = new AdminSetupDB();
+            success = db.insertItems(toInsert);
+        }
+
+        return success;
     }
 
-    public void closeCreateTest() {
 
-        JOptionPane.showMessageDialog(rootPanel, "Success!");
-        SetupTest.showChooseActionOnTest();
+    public void closeCreateTest(boolean success) {
 
+        if(success == true) {
+            JOptionPane.showMessageDialog(rootPanel, "Success!");
+        } else if(success == false) {
+            JOptionPane.showMessageDialog(rootPanel, "Failed");
+        }
     }
 
     public JPanel getRootPanel() {

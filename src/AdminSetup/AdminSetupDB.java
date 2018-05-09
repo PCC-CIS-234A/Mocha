@@ -107,15 +107,16 @@ public class AdminSetupDB {
         return null;
     }
 
-    public ArrayList<Item> getTestItems() {
+    public ArrayList<Item> getTestItems(int testID) {
         ArrayList<Item> items = new ArrayList<>();
 
         connect();
         String query = "SELECT *\n" +
                        "FROM ITEM\n" +
-                       "WHERE ITEM.TestID = 1;";
+                       "WHERE ITEM.TestID = ?;";
         try {
             PreparedStatement stmt = myConn.prepareStatement(query);
+            stmt.setInt(1, testID);
             ResultSet rs = stmt.executeQuery();
             while(rs.next()) {
                 Item i = new Item(
@@ -159,15 +160,46 @@ public class AdminSetupDB {
         return null;
     }
 
-    public void mergeItems(ArrayList<Item> items) {
+    public boolean deleteItems(ArrayList<Item> items) {
+        connect();
+        String query = "DELETE FROM ITEM\n" +
+                "WHERE ITEM.TestID = ?\n" +
+                "AND ITEM.Name = ?;";
+        try {
+            PreparedStatement stmt = myConn.prepareStatement(query);
+            for(Item item: items) {
+                stmt.setInt(1, item.getTestID());
+                stmt.setString(2, item.getName());
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+            //   ResultSet rs = stmt.executeQuery();
+            /*
+            while(rs.next()) {
+                Test t = new Test(
+                        //       rs.getInt("TestID"),
+                        rs.getString("Name")
+                );
+                tests.add(t);
+            }
+            */
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean mergeItems(ArrayList<Item> items, int testID) {
+        System.out.println("testID: " + testID);
         //Merge items
         connect();
 
-            String query_full = "MERGE INTO ITEM AS DB_ITEM\n" +
+    /*        String query_full = "MERGE INTO ITEM AS DB_ITEM\n" +
                     "USING (SELECT ITEM.TestID, ITEM.Name FROM ITEM) AS JAVA_ITEMS (Id, N)\n" +
                     "ON DB_ITEM.TestID = JAVA_ITEMS.Id AND DB_ITEM.Name = JAVA_ITEMS.N\n" +
                     "WHEN NOT MATCHED THEN INSERT (TestID, Name) VALUES(JAVA_ITEMS.Id, JAVA_ITEMS.N)\n" +
-                    "WHEN NOT MATCHED BY SOURCE THEN DELETE;";
+                    "WHEN NOT MATCHED BY SOURCE THEN DELETE;";*/
 
             String query_part1 = "MERGE INTO ITEM AS DB_ITEM\n" +
                     "USING (";
@@ -184,9 +216,9 @@ public class AdminSetupDB {
                 int currentIndex = items.indexOf(item);
 
                 if(currentIndex == 0) {
-                    query_values = "VALUES (1, '" + item.getName() + "')";
+                    query_values = "VALUES (" + testID + ", '" + item.getName() + "')";
                 }else {
-                    query_values = query_values + "(1, '" + item.getName() + "')";
+                    query_values = query_values + "(" + testID + ", '" + item.getName() + "')";
                 }
 
                 System.out.println(lastIndex);
@@ -223,12 +255,15 @@ public class AdminSetupDB {
                 tests.add(t);
             }
             */
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    public void insertItems(ArrayList<Item> items) {
+
+    public boolean insertItems(ArrayList<Item> items) {
         connect();
         String query = "INSERT INTO ITEM (TestID, Name)\n" +
                 "VALUES (?, ?);";
@@ -250,8 +285,10 @@ public class AdminSetupDB {
                 tests.add(t);
             }
             */
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -285,7 +322,7 @@ public class AdminSetupDB {
     //    return id;
     }
 
-    public void insertTest(Test test) {
+    public boolean insertTest(Test test) {
         connect();
         String query = "INSERT INTO TEST (Name)\n" +
                        "VALUES ('" + test.getName() + "');";
@@ -305,8 +342,10 @@ public class AdminSetupDB {
                 tests.add(t);
             }
             */
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 

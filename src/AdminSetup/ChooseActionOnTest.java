@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 
 /**
@@ -28,11 +30,14 @@ public class ChooseActionOnTest {
     private JButton backButton; //Doesn't do anything yet. Plan to have it return the user to the GUI that called this GUI.
     private JScrollPane testScrollPane;
     private JList testList;
+    private JPanel testJPanel;
     private ArrayList<Test> tests;
     private DefaultListModel listModel;
 
     public ChooseActionOnTest() {
         rootPanel.setPreferredSize(new Dimension(300, 200));
+
+        testJPanel.setVisible(false);
 
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -94,6 +99,16 @@ public class ChooseActionOnTest {
                 okButtonActionPerformed(e);
             }
         });
+        editTestRadioButton.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(e.getStateChange() == ItemEvent.SELECTED) {
+                    testJPanel.setVisible(true);
+                } else if (e.getStateChange() == ItemEvent.DESELECTED) {
+                    testJPanel.setVisible(false);
+                }
+            }
+        });
     }
 
     private void okButtonActionPerformed(ActionEvent e) {
@@ -116,9 +131,12 @@ public class ChooseActionOnTest {
                     boolean editable = test.getEditable();
                     System.out.println(editable);
                     if(editable == true) {
-                        SetupTest.showEditTest();
+                        int id = test.getTestID();
+                        SetupTest.showEditTest(id);
                     } else if (editable == false) {
-                        SetupTest.showViewTest();
+                      //  SetupTest.showViewTest();
+                        int id = test.getTestID();
+                        SetupTest.showViewTest(id);
                     }
                 }
             }

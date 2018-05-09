@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
@@ -22,15 +24,19 @@ public class CreateTest {
     private JScrollPane itemScrollPane;
     private JPanel addItemPanel;
     private JPanel nameTestPanel;
-    private JButton checkTestNameButton;
     private JTextField testNameTextField;
     private JLabel confirmTestNameJLabel;
     private JLabel uniqueItemJLabel;
+    private JPanel actionButtonPanel;
+    private JButton deleteButton;
     private DefaultListModel listModel;
 
     public CreateTest() {
       /*  rootPanel.setPreferredSize(new Dimension(300, 200)); OLD SIZE*/
-        rootPanel.setPreferredSize(new Dimension(600, 350));
+        rootPanel.setPreferredSize(new Dimension(400, 300));
+
+        actionButtonPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
+
         finishButton.setEnabled(false);
         /*actionButtonPanel.setBorder(BorderFactory.createLineBorder(Color.gray));*/
         nameTestPanel.setBorder(BorderFactory.createTitledBorder("Name Test"));
@@ -54,10 +60,12 @@ public class CreateTest {
                 // in the text field when there isonly one item, the
                 // Finish button will be enabled again
                 // (That needs to be fixed still).
-                int numListEle = itemList.getModel().getSize();
+  /*              int numListEle = itemList.getModel().getSize();
                 if(numListEle > 1) {
                     finishButton.setEnabled(true);
                 }
+*/
+                enableFinishButton();
 
                 itemTextField.setText(null);
                 itemTextField.requestFocusInWindow();
@@ -74,10 +82,12 @@ public class CreateTest {
                 // in the text field when there isonly one item, the
                 // Finish button will be enabled again
                 // (That needs to be fixed still).
-                int numListEle = itemList.getModel().getSize();
+  /*              int numListEle = itemList.getModel().getSize();
                 if(numListEle > 1) {
                     finishButton.setEnabled(true);
                 }
+*/
+                enableFinishButton();
 
                 itemTextField.setText(null);
                 itemTextField.requestFocusInWindow();
@@ -107,9 +117,9 @@ public class CreateTest {
 
                     if(i == 1) {
 
-                        createTestWithItems(testName, items);
+                        boolean success = createTestWithItems(testName, items);
 
-                        closeCreateTest();
+                        closeCreateTest(success);
                     }
 
 
@@ -121,6 +131,7 @@ public class CreateTest {
                 */
             }
         });
+        /*
         checkTestNameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -128,14 +139,56 @@ public class CreateTest {
                 checkTestName(name);
             }
         });
+        */
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (itemList.isSelectionEmpty() == false) {
+                    int selectedIndex = itemList.getSelectedIndex();
+
+                    listModel.remove(selectedIndex);
+
+                    enableFinishButton();
+                }
+            }
+        });
+        /*
+        testNameTextField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+        //        super.focusLost(e);
+                String name = testNameTextField.getText();
+                checkTestName(name);
+            }
+        });
+        */
+        testNameTextField.addFocusListener(new FocusAdapter() {
+            String name;
+            @Override
+            public void focusGained(FocusEvent e) {
+      //          super.focusGained(e);
+                name = testNameTextField.getText();
+
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+        //        super.focusLost(e);
+             //   String name = testNameTextField.getText();
+                String newName = testNameTextField.getText();
+                if(!name.equals(newName)) {
+                    checkTestName(newName);
+                }
+            }
+        });
     }
 
-    public void createTestWithItems(String testName, ArrayList<String> itemStrings) {
+    public boolean createTestWithItems(String testName, ArrayList<String> itemStrings) {
 
         //Update Test
         AdminSetupDB db = new AdminSetupDB();
         Test test = new Test(testName);
-        db.insertTest(test);
+        boolean testSuccess = db.insertTest(test);
 
         //Get test id from database
     //    System.out.println("Sending to getTestID: " + testName);
@@ -149,7 +202,13 @@ public class CreateTest {
             items.add(item);
         }
 
-        db.insertItems(items);
+        boolean itemSuccess = db.insertItems(items);
+
+        if(testSuccess == true && itemSuccess == true) {
+            return true;
+        } else {
+            return false;
+        }
 
     }
 
@@ -235,11 +294,41 @@ public class CreateTest {
 
     }
 
+    /*
     public void closeCreateTest() {
 
         JOptionPane.showMessageDialog(rootPanel, "Success!");
         SetupTest.showChooseActionOnTest();
 
+    }
+    */
+
+    public void enableFinishButton() {
+        int numListEle = itemList.getModel().getSize();
+
+        /*
+        if(numListEle > 1) {
+            finishButton.setEnabled(true);
+        } else {
+            finishButton.setEnabled(false);
+        }
+        */
+
+        if(numListEle < 2) {
+            finishButton.setEnabled(false);
+        } else {
+            finishButton.setEnabled(true);
+        }
+    }
+
+    public void closeCreateTest(boolean success) {
+
+        if(success == true) {
+            JOptionPane.showMessageDialog(rootPanel, "Success!");
+        } else if(success == false) {
+            JOptionPane.showMessageDialog(rootPanel, "Failed");
+        }
+        SetupTest.showChooseActionOnTest();
     }
 /*
     public Array getSuggestedItems() {

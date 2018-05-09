@@ -18,15 +18,19 @@ public class ViewTest {
     private JButton cancelButton;
     private ArrayList<Item> items;
     private DefaultListModel listModel;
+    private int myTestID;
 
-    public ViewTest() {
+ //   public ViewTest() {
+     public ViewTest(int testID) {
+         myTestID = testID;
+
         rootPanel.setPreferredSize(new Dimension(300, 200));
 
         listModel = new DefaultListModel();
         itemList.setModel(listModel);
 
         // ArrayList<Item> items = Item.getTestItems();
-        items = Item.getTestItems();
+        items = Item.getTestItems(myTestID);
 
         //Add all items to the list
         for(Item item: items) {
@@ -42,6 +46,20 @@ public class ViewTest {
                 SetupTest.showChooseActionOnTest();
             }
         });
+         finishButton.addActionListener(new ActionListener() {
+             @Override
+             public void actionPerformed(ActionEvent e) {
+                 SetupTest.showChooseActionOnTest();
+             }
+         });
+     }
+
+    public int getTestID() {
+         return myTestID;
+    }
+
+    public void setTestID(int testID) {
+         myTestID = testID;
     }
 
     public JPanel getRootPanel() {

@@ -10,11 +10,11 @@ public class Item {
     private int myItemID;
     private int myTestID;
     private String myName;
-    /*
+
     private TableAction act;
 
     public enum TableAction {KEEP, INS, DEL;}
-    */
+
 
   //  Item (int itemID, int testID, String name) {
   Item (int testID, String name) {
@@ -40,11 +40,11 @@ public class Item {
 //    }
 
 
-    /*
+
     public TableAction getTableAction() {
         return act;
     }
-    */
+
 
 
 
@@ -59,17 +59,17 @@ public class Item {
 
 
 
-    /*
+
     public void setTableAction(TableAction action) {
         act = action;
     }
-*/
 
 
 
-    public static ArrayList<Item> getTestItems() {
+
+    public static ArrayList<Item> getTestItems(int testID) {
         AdminSetupDB db = new AdminSetupDB();
-        return db.getTestItems();
+        return db.getTestItems(testID);
     }
 
 

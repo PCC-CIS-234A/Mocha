@@ -33,18 +33,18 @@ public class SetupTest {
         frame.setVisible(true);
     }
 
-    public static void showEditTest() {
+    public static void showEditTest(int testID) {
         frame.getContentPane().removeAll();
         frame.setTitle("Edit Test");
-        frame.getContentPane().add(new EditTest().getRootPanel());
+        frame.getContentPane().add(new EditTest(testID).getRootPanel());
         frame.pack();
         frame.setVisible(true);
     }
 
-    public static void showViewTest() {
+    public static void showViewTest(int testID) {
         frame.getContentPane().removeAll();
         frame.setTitle("View Test");
-        frame.getContentPane().add(new ViewTest().getRootPanel());
+        frame.getContentPane().add(new ViewTest(testID).getRootPanel());
         frame.pack();
         frame.setVisible(true);
     }
