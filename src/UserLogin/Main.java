@@ -1,14 +1,20 @@
 package UserLogin;
 
-import javax.swing.*;
+import UserLogin.Forms.LoginForm;
+import UserLogin.Forms.RegisterForm;
+import UserLogin.Objects.UserAccount;
 
+import javax.swing.*;
 
 import static javax.swing.SwingUtilities.invokeLater;
 
 /**
  * @author Anh Nguyen
  * @version 4/25/2018
- * Description:
+ * Description: This is the controller class for UserLogin GUIs
+ * This class is also control what a user can do based on their role
+ * (user can take tests/admin can set up a test/ therapist can view the report)
+ * For sprint 1: only show different messages for different roles
  */
 
 
@@ -24,6 +30,7 @@ public class Main {
     }
 
     public static void showLogin() {
+        myFrame.setTitle("Log in");
         myFrame.getContentPane().removeAll();
         myFrame.getContentPane().add(new LoginForm(myEmail, myPassword).getRootPanel());
         myFrame.pack();
@@ -32,16 +39,10 @@ public class Main {
     }
 
     public static void showRegister() {
+        myFrame.setTitle("Register");
+        myFrame.setSize(300, 150);
         myFrame.getContentPane().removeAll();
         myFrame.getContentPane().add(new RegisterForm(myEmail, myPassword).getRootPanel());
-        myFrame.pack();
-        myFrame.setLocationRelativeTo(null);
-        myFrame.setVisible(true);
-    }
-
-    public static void showUserTakingTest() {
-        myFrame.getContentPane().removeAll();
-        myFrame.getContentPane().add(new UserTakingTestForm().getRootPanel());
         myFrame.pack();
         myFrame.setLocationRelativeTo(null);
         myFrame.setVisible(true);
@@ -56,36 +57,36 @@ public class Main {
     }
 
     public static void login() {
+     //check Email and Password
 
-        // check Email and Password
-
-        Database db = new Database();
-
+        DB db = new DB();
         UserAccount user = db.getUser(myEmail,myPassword);
 
-        if(user == null)
-        {
-
+    // If user's login is failed , error message will pop up
+        if(user == null) {
             JOptionPane.showMessageDialog(null,"Incorrect Email or Password");
             return;
         }
-        String role= user.getmyRole();
-        //System.out.println(role);
+        String role = user.getMyRole();
+    // If user's login is successful, different roles will assigned different messages
         if(role.equals("user")) {
             // redirect to User page
-            System.out.println("Show User taking test");
-            showUserTakingTest();
+            JOptionPane.showMessageDialog(null, "User Taking Test Page");
+            return;
         }
         if(role.equals("admin")) {
             // redirect to admin page
-            System.out.println("Show admin setup test");
+           JOptionPane.showMessageDialog(null, "Show Admin Setup Page");
+          //  new SetupTest();
+            return;
         }
         if(role.equals("therapist")) {
             // redirect to therapist page
-            System.out.println("Show user report");
+            JOptionPane.showMessageDialog(null, "Show Report Page");
+            return;
         }
         }
-
+    // The program start from here
     public static void main(String[] args) {
         invokeLater(new Runnable() {
            public void run() {
