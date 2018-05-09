@@ -1,11 +1,11 @@
 package UserTakingTest;
 
 import javax.swing.*;
-import java.util.ArrayList;
+
 import static javax.swing.SwingUtilities.invokeLater;
 
 /**
- * Class to start Story3 GUI - User Taking Test
+ * Class to start User Taking Test GUI
  * @author Liz Goltz
  * @version 4/8/2018
  */
@@ -37,7 +37,7 @@ public class Main {
 
     public static void finished() {
         mFrame.getContentPane().removeAll();
-        mFrame.getContentPane().add(new Done().getRootPanel());
+        mFrame.getContentPane().add(new TestOver().getRootPanel());
         mFrame.pack();
         mFrame.setLocationRelativeTo(null);
         mFrame.setVisible(true);

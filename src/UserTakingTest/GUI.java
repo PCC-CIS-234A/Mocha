@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 
 /**
- * Class to control Story3 GUI
+ * Class to control User Taking Test GUI
  * @author Liz Goltz
  * @version
  */

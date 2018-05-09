@@ -2,7 +2,7 @@ package UserTakingTest;
 
 import javax.swing.*;
 
-public class Done {
+public class TestOver {
     private JPanel rootPanel;
 
     JPanel getRootPanel() {

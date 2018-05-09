@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class for Test Logic
+ * Class for User Taking Test Logic
  * @author Liz Goltz
  * @version 4/3/2018
  */

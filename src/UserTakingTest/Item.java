@@ -1,5 +1,10 @@
 package UserTakingTest;
 
+/**
+ * Class to hold an Item
+ * @author Liz Goltz
+ * @version 4/8/2018
+ */
 public class Item {
     private int mItemID;
     private int mTestID;

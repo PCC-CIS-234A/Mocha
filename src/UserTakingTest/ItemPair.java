@@ -1,7 +1,7 @@
 package UserTakingTest;
 
 /**
- * Class to hold an item pairing and win code
+ * Class to hold an Item pairing and win code
  * @author Liz Goltz
  * @version 4/3/2018
  */
@@ -13,7 +13,6 @@ public class ItemPair {
     public ItemPair(Item item1, Item item2) {
         this.item1 = item1;
         this.item2 = item2;
-        //?winItem will be set by user input, do I need to initialize it in constructor?
         this.winItem = 3; // 3 is a number not indicating a test answer b/c can't initialize int to null
     }
 
