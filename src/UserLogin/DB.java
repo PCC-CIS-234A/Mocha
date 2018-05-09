@@ -14,25 +14,41 @@ import java.sql.*;
 
 public class DB {
     private Database db;
+    private Connection mConnection = null;
+
     public DB(){
         db = new Database();
     }
 
     /**
-     * Insert a row to the USERACCOUNT table
-     * @param user the user data to be added
-     * @return true if insert successfully
+     * Insert a row into USERACCOUNT table
+     * @param userName user's username
+     * @param password user's password
+     * @param email user's email
+     * @param role user's role
+     * @return null if this method failed to insert data to database
      */
-    public boolean insertUser(UserAccount user){
 
-        String query = "INSERT INTO USERACCOUNT (UserName,Password,Email) VALUES" +
-                "('" +user.getMyUserName()+"', '"+user.getMyPassword()+"', '" +user.getMyEmail()+"');";
+    public UserAccount insertUser(String userName, String password, String email, String role) {
+        //   connect();
+        String query = "INSERT INTO USERACCOUNT (UserName, Password, Email, Role) VALUES" +
+                "('"+userName+"', '"+password+"', '"+email+"', 'user');SELECT SCOPE_IDENTITY() AS ID;";
 
-        db.execute(query);
+        try {
+            Database db = new Database();
+            ResultSet rs =  db.execute(query);
+
+            if (rs.next()) {
+                return new UserAccount(
+                        rs.getInt("ID"), userName, password, email, role);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         db.close();
-        return true;
-    }
+        return null;
 
+    }
     /**
      * Read user info from the USERACCOUNT table for a given email
      * @param email the email of a given user
@@ -48,6 +64,7 @@ public class DB {
             UserAccount user = null;
             while(rs.next()) {
                 user = new UserAccount(
+                        rs.getInt("UserID"),
                         rs.getString("UserName"),
                         rs.getString("Password"),
                         rs.getString("Email"),
@@ -78,6 +95,7 @@ public class DB {
             UserAccount user = null;
             while(rs.next()) {
                 user = new UserAccount(
+                        rs.getInt("UserID"),
                         rs.getString("UserName"),
                         rs.getString("Password"),
                         rs.getString("Email"),

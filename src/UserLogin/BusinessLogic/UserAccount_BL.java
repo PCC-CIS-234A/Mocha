@@ -1,4 +1,4 @@
-package BusinessLogic;
+package UserLogin.BusinessLogic;
 
 import UserLogin.DB;
 import UserLogin.Objects.UserAccount;

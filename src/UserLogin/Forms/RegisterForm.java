@@ -1,6 +1,6 @@
 package UserLogin.Forms;
 
-import BusinessLogic.UserAccount_BL;
+import UserLogin.BusinessLogic.UserAccount_BL;
 import UserLogin.DB;
 import UserLogin.Main;
 import UserLogin.Objects.UserAccount;
@@ -27,7 +27,7 @@ public class RegisterForm {
     private DB db;
 
     /**
-     * This function communicate with UserAccount_BL to check user input
+     * This method communicate with UserAccount_BL to check user input
      * and it will output proper warning message to let user know what they should do
      * @return true if all the tests are passed
      */
@@ -102,8 +102,7 @@ public class RegisterForm {
         }
 
         db = new DB();
-        UserAccount user = new UserAccount(strUsername,strPassword,strEmail,"user");
-        boolean result = db.insertUser(user);
+        UserAccount result = db.insertUser(strUsername,strPassword,strEmail,"user");
         return true;
     }
 

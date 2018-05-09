@@ -7,6 +7,7 @@ package UserLogin.Objects;
  */
 
 public class UserAccount {
+    private int myUserID;
     private String myUserName;
     private String myPassword;
     private String myEmail;
@@ -15,13 +16,22 @@ public class UserAccount {
     /**
      * Create a user account object with the given properties
      */
-    public UserAccount(String myUserName, String myPassword, String myEmail, String myRole){
-        this.setMyUserName(myUserName);
-        this.setMyPassword(myPassword);
-        this.setMyEmail(myEmail);
-        this.setMyRole(myRole);
+    public UserAccount(int userID, String userName, String password, String email, String role){
+        setMyUserID(userID);
+        this.setMyUserName(userName);
+        this.setMyPassword(password);
+        this.setMyEmail(email);
+        this.setMyRole(role);
     }
     // Getters and Setters
+
+    public int getMyUserID() {
+        return myUserID;
+    }
+
+    public void setMyUserID(int myUserID) {
+        this.myUserID = myUserID;
+    }
     public String getMyUserName() {
         return myUserName;
     }

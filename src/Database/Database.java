@@ -18,7 +18,7 @@ public class Database {
     /**
      * Connects to the database
      */
-    private void connect() {
+    public void connect() {
         if (mConnection != null)
             return;
         try {
