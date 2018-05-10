@@ -6,6 +6,8 @@ import java.util.ArrayList;
 /**
  * @author Rebecca Kennedy
  * @version 5/1/2018.
+ * Description: This is the database class for the AdminSetup Package. It connects to
+ * the database and both queries it and makes changes to it.
  */
 public class AdminSetupDB {
     private static final String SERVER = "cisdbss.pcc.edu";
@@ -16,47 +18,24 @@ public class AdminSetupDB {
             + SERVER + "/" + DATABASE + ";user=" + USERNAME + ";password=" + PASSWORD;
     private Connection myConn = null;
 
+    /**
+     * Connects program to the database
+     */
     private void connect() {
         if (myConn != null) {
             return;
         }
         try {
             myConn = DriverManager.getConnection(CONNECTION_STRING);
-          /*  System.out.println("Connected to 234a_Mocha database.");*/
+            System.out.println("Connected to 234a_Mocha database.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void addNewTest(String name, ArrayList<String> items) {
-        //Controller method for adding new test and items
-        //checkTestName(name);
-    }
-
-    /*
-    public void checkTestName(String name) {
-        connect();
-        String query = "SELECT *\n" +
-                       "FROM TEST\n" +
-                       "WHERE TEST.Name = ?;";
-        try {
-            PreparedStatement stmt = myConn.prepareStatement(query);
-            stmt.setString(1, name);
-            ResultSet rs = stmt.executeQuery();
-            while(rs.next()) {
-                Customer c = new Customer(
-                        rs.getString("Name"),
-                        rs.getString("StreetAddress"),
-                        rs.getString("StateProvince")
-                );
-                customers.add(c);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-*/
-
+    /**
+     * Gets all the tests
+     */
     public ArrayList<Test> getTests() {
         ArrayList<Test> tests = new ArrayList<>();
 
@@ -67,20 +46,68 @@ public class AdminSetupDB {
             PreparedStatement stmt = myConn.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             while(rs.next()) {
-                Test t = new Test(
-                        rs.getInt("TestID"),
-                        rs.getString("Name")
-                );
+                Test t = new Test(rs.getString("Name"));
+                tests.add(t);
+                t.setTestID(rs.getInt("TestID"));
+            }
+            return tests;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Gets all the TestIDs of the tests that have already been taken by a user
+     */
+    public ArrayList<TestSession> getTakenTests() {
+        ArrayList<TestSession> tests = new ArrayList<>();
+
+        connect();
+        String query = "SELECT TESTSESSION.TestID\n" +
+                "FROM TESTSESSION;";
+        try {
+            PreparedStatement stmt = myConn.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()) {
+                TestSession t = new TestSession(rs.getInt("TestID"));
                 tests.add(t);
             }
             return tests;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
+    /**
+     * Gets all the items for a particular test
+     */
+    public ArrayList<Item> getTestItems(int testID) {
+        ArrayList<Item> items = new ArrayList<>();
+
+        connect();
+        String query = "SELECT *\n" +
+                       "FROM ITEM\n" +
+                       "WHERE ITEM.TestID = ?;";
+        try {
+            PreparedStatement stmt = myConn.prepareStatement(query);
+            stmt.setInt(1, testID);
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()) {
+                Item i = new Item(rs.getInt("TestID"), rs.getString("Name"));
+                items.add(i);
+            }
+            return items;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Gets the test with a particular name
+     */
     public ArrayList<Test> getTestWithName(String name) {
         ArrayList<Test> tests = new ArrayList<>();
 
@@ -93,20 +120,105 @@ public class AdminSetupDB {
             stmt.setString(1, name);
             ResultSet rs = stmt.executeQuery();
             while(rs.next()) {
-                Test t = new Test(
-                        rs.getInt("TestID"),
-                        rs.getString("Name")
-                );
+                Test t = new Test(rs.getString("Name"));
                 tests.add(t);
             }
             return tests;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
+    /**
+     * Deletes particular items of a particular test
+     */
+    public boolean deleteItems(ArrayList<Item> items) {
+        connect();
+        String query = "DELETE FROM ITEM\n" +
+                "WHERE ITEM.TestID = ?\n" +
+                "AND ITEM.Name = ?;";
+        try {
+            PreparedStatement stmt = myConn.prepareStatement(query);
+            for(Item item: items) {
+                stmt.setInt(1, item.getTestID());
+                stmt.setString(2, item.getName());
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Inserts the items for a particular test.
+     */
+    public boolean insertItems(ArrayList<Item> items) {
+        connect();
+        String query = "INSERT INTO ITEM (TestID, Name)\n" +
+                "VALUES (?, ?);";
+        try {
+            PreparedStatement stmt = myConn.prepareStatement(query);
+            for(Item item: items) {
+                stmt.setInt(1, item.getTestID());
+                stmt.setString(2, item.getName());
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Gets the TestID of a test with a particular name
+     */
+    public int getTestID(String name) {
+        int id;
+        connect();
+        String query = "SELECT TestID\n" +
+                "FROM TEST\n" +
+                "WHERE TEST.Name = ?;";
+        try {
+            PreparedStatement stmt = myConn.prepareStatement(query);
+            stmt.setString(1, name);
+            ResultSet rs = stmt.executeQuery();
+
+            while(rs.next()) {
+                id = rs.getInt("TestID");
+                return id;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    /**
+     * Inserts the name for a new test
+     */
+    public boolean insertTest(Test test) {
+        connect();
+        String query = "INSERT INTO TEST (Name)\n" +
+                       "VALUES ('" + test.getName() + "');";
+        try {
+            Statement stmt = myConn.createStatement();
+            stmt.executeUpdate(query);
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Closes the database connection
+     */
     public void close() {
         if(myConn != null) {
             System.out.println("Closing the 234a_Mocha database connection.");
@@ -118,6 +230,9 @@ public class AdminSetupDB {
         }
     }
 
+    /**
+     * Calls the close() method
+     */
     @Override
     protected void finalize() {
         close();

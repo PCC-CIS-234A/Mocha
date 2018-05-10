@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 /**
  * @author Rebecca Kennedy
@@ -15,81 +16,226 @@ public class EditTest {
     private JTextField itemTextField;
     private JButton addButton;
     private JButton deleteButton;
-    private JScrollPane itemScrollPane; //Doesn't do anything yet. I plan on using this for Sprint 2
+    private JScrollPane itemScrollPane;
     private JList itemList;
     private JButton cancelButton;
-    private JButton finishButton; //Doesn't do anything yet
+    private JButton finishButton;
     private JPanel actionButtonPanel;
+    private JLabel uniqueItemJLabel;
+    private ArrayList<Item> items;
+    private DefaultListModel listModel;
+    private int myTestID;
 
-    public EditTest() {
-        rootPanel.setPreferredSize(new Dimension(300, 200));
-        finishButton.setEnabled(false);
+    public EditTest(int testID) {
+        myTestID = testID;
+
+        rootPanel.setPreferredSize(new Dimension(400, 300));
+
         actionButtonPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
 
-        DefaultListModel listModel = new DefaultListModel();
+        listModel = new DefaultListModel();
+
+        items = Item.getTestItems(myTestID);
+
+        for(Item item: items) {
+            item.setTableAction(Item.TableAction.KEEP);
+            listModel.addElement(item.getName());
+        }
+
+        enableFinishButton();
+
+        itemList.setModel(listModel);
 
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                listModel.addElement(itemTextField.getText());
+                String str = itemTextField.getText();
+                addItem(str);
 
-                //Enable Finish button if more than one item.
-                // Currently, if Add is clicked or the enter key is hit
-                // in the text field when there isonly one item, the
-                // Finish button will be enabled again
-                // (That needs to be fixed still).
-                int numListEle = itemList.getModel().getSize();
-                if(numListEle > 1) {
-                    finishButton.setEnabled(true);
-                }
+                enableFinishButton();
 
                 itemTextField.setText(null);
                 itemTextField.requestFocusInWindow();
             }
         });
-        itemList.setModel(listModel);
+
         itemTextField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                listModel.addElement(itemTextField.getText());
+                String str = itemTextField.getText();
+                addItem(str);
 
-                //Enable Finish button if more than one item.
-                // Currently, if Add is clicked or the enter key is hit
-                // in the text field when there isonly one item, the
-                // Finish button will be enabled again
-                // (That needs to be fixed still).
-                int numListEle = itemList.getModel().getSize();
-                if(numListEle > 1) {
-                    finishButton.setEnabled(true);
-                }
+                enableFinishButton();
 
                 itemTextField.setText(null);
                 itemTextField.requestFocusInWindow();
             }
         });
+
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int selectedIndex = itemList.getSelectedIndex();
+                if (itemList.isSelectionEmpty() == false) {
+                    int selectedIndex = itemList.getSelectedIndex();
+
                 if(selectedIndex != -1) {
+                    Object obj = listModel.getElementAt(selectedIndex);
+                    String str= obj.toString();
+
+                    //set the TableAction of the item being deleted
+                    for(Item item: items) {
+                        if(item.getName().equals(str)) {
+                            item.setTableAction(Item.TableAction.DEL);
+                        }
+                    }
                     listModel.remove(selectedIndex);
                 }
 
-                //Disable Finish button if less than two items
-                int numListEle = itemList.getModel().getSize();
-                if(numListEle < 2) {
-                    finishButton.setEnabled(false);
+                    enableFinishButton();
                 }
             }
         });
+
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 SetupTest.showChooseActionOnTest();
             }
         });
+
+        finishButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                boolean viewOnly = true;
+                for(Item item: items) {
+                    if (item.getTableAction() != Item.TableAction.KEEP) {
+                        viewOnly = false;
+                    }
+                }
+
+                if(viewOnly == false) {
+                    boolean success = updateDBItems(items);
+                    closeCreateTest(success);
+                    SetupTest.showChooseActionOnTest();
+                } else {
+                    SetupTest.showChooseActionOnTest();
+                }
+            }
+        });
     }
 
+    /**
+     * Adds an item to the list
+     */
+    public void addItem(String suggestedItem) {
+            Object[] objects = listModel.toArray();
+
+            if(listModel.isEmpty()) {
+                if(suggestedItem.trim().length() > 0) {
+                    setupTableAction(suggestedItem);
+                    listModel.addElement(suggestedItem);
+                    uniqueItemJLabel.setText("That item should work!");
+                }
+            } else {
+                int unique = 1;
+
+                for (Object obj: objects) {
+                    if(suggestedItem.equals(obj.toString())) {
+                        uniqueItemJLabel.setText(suggestedItem + " has already been entered ");
+                        unique = 0;
+                    }
+                }
+
+                if (unique == 1) {
+                    if(suggestedItem.trim().length() > 0) {
+                        setupTableAction(suggestedItem);
+                        listModel.addElement(suggestedItem);
+                        uniqueItemJLabel.setText("That item should work!");
+                    }
+                }
+            } //end else
+
+    }
+
+    /**
+     * Sets up the TableAction for the items in the list
+     */
+    public void setupTableAction(String suggestedItem) {
+        int isNew = 1;
+
+        //set the TableAction of the item being added back in after previously being deleted
+        for(Item item: items) {
+            if(suggestedItem.equals(item.getName())) {
+                item.setTableAction(Item.TableAction.KEEP);
+                isNew = 0;
+            }
+        }
+
+        //add new item and set it to ins
+        if(isNew == 1) {
+            Item newItem = new Item(myTestID, suggestedItem);
+            newItem.setTableAction(Item.TableAction.INS);
+            items.add(newItem);
+        }
+    }
+
+    /**
+     * Enables or disables the finish button
+     */
+    public void enableFinishButton() {
+        int numListEle = itemList.getModel().getSize();
+
+        if(numListEle < 2) {
+            finishButton.setEnabled(false);
+        } else {
+            finishButton.setEnabled(true);
+        }
+    }
+
+    /**
+     * Inserts and deletes items in the database
+     */
+    public boolean updateDBItems(ArrayList<Item> items) {
+        ArrayList<Item> toDelete = new ArrayList<>();
+        ArrayList<Item> toInsert = new ArrayList<>();
+
+        for (Item item: items) {
+            if(item.getTableAction() == Item.TableAction.DEL) {
+                toDelete.add(item);
+            } else if(item.getTableAction() == Item.TableAction.INS) {
+                toInsert.add(item);
+            }
+        }
+
+        boolean success = false;
+        if(toDelete.isEmpty() == false) {
+            AdminSetupDB db = new AdminSetupDB();
+            success = db.deleteItems(toDelete);
+        }
+
+        if(toInsert.isEmpty() == false) {
+            AdminSetupDB db = new AdminSetupDB();
+            success = db.insertItems(toInsert);
+        }
+
+        return success;
+    }
+
+    /**
+     * Tells whether or not whatever the admin was trying to do was successful or not before closing
+     */
+    public void closeCreateTest(boolean success) {
+        if(success == true) {
+            JOptionPane.showMessageDialog(rootPanel, "Success!");
+        } else if(success == false) {
+            JOptionPane.showMessageDialog(rootPanel, "Failed");
+        }
+    }
+
+    /**
+     * Gets rootPanel
+     */
     public JPanel getRootPanel() {
         return rootPanel;
     }
