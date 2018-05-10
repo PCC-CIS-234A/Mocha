@@ -44,14 +44,23 @@ public class ViewTest {
          });
      }
 
+    /**
+     * Gets TestID
+     */
     public int getTestID() {
          return myTestID;
     }
 
+    /**
+     * Sets TestID
+     */
     public void setTestID(int testID) {
          myTestID = testID;
     }
 
+    /**
+     * Gets rootPanel
+     */
     public JPanel getRootPanel() {
         return rootPanel;
     }

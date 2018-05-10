@@ -18,6 +18,9 @@ public class AdminSetupDB {
             + SERVER + "/" + DATABASE + ";user=" + USERNAME + ";password=" + PASSWORD;
     private Connection myConn = null;
 
+    /**
+     * Connects program to the database
+     */
     private void connect() {
         if (myConn != null) {
             return;
@@ -30,6 +33,9 @@ public class AdminSetupDB {
         }
     }
 
+    /**
+     * Gets all the tests
+     */
     public ArrayList<Test> getTests() {
         ArrayList<Test> tests = new ArrayList<>();
 
@@ -51,6 +57,9 @@ public class AdminSetupDB {
         return null;
     }
 
+    /**
+     * Gets all the TestIDs of the tests that have already been taken by a user
+     */
     public ArrayList<TestSession> getTakenTests() {
         ArrayList<TestSession> tests = new ArrayList<>();
 
@@ -71,6 +80,9 @@ public class AdminSetupDB {
         return null;
     }
 
+    /**
+     * Gets all the items for a particular test
+     */
     public ArrayList<Item> getTestItems(int testID) {
         ArrayList<Item> items = new ArrayList<>();
 
@@ -93,6 +105,9 @@ public class AdminSetupDB {
         return null;
     }
 
+    /**
+     * Gets the test with a particular name
+     */
     public ArrayList<Test> getTestWithName(String name) {
         ArrayList<Test> tests = new ArrayList<>();
 
@@ -115,6 +130,9 @@ public class AdminSetupDB {
         return null;
     }
 
+    /**
+     * Deletes particular items of a particular test
+     */
     public boolean deleteItems(ArrayList<Item> items) {
         connect();
         String query = "DELETE FROM ITEM\n" +
@@ -135,6 +153,9 @@ public class AdminSetupDB {
         }
     }
 
+    /**
+     * Inserts the items for a particular test.
+     */
     public boolean insertItems(ArrayList<Item> items) {
         connect();
         String query = "INSERT INTO ITEM (TestID, Name)\n" +
@@ -154,6 +175,9 @@ public class AdminSetupDB {
         }
     }
 
+    /**
+     * Gets the TestID of a test with a particular name
+     */
     public int getTestID(String name) {
         int id;
         connect();
@@ -175,6 +199,9 @@ public class AdminSetupDB {
         return -1;
     }
 
+    /**
+     * Inserts the name for a new test
+     */
     public boolean insertTest(Test test) {
         connect();
         String query = "INSERT INTO TEST (Name)\n" +
@@ -189,6 +216,9 @@ public class AdminSetupDB {
         }
     }
 
+    /**
+     * Closes the database connection
+     */
     public void close() {
         if(myConn != null) {
             System.out.println("Closing the 234a_Mocha database connection.");
@@ -200,6 +230,9 @@ public class AdminSetupDB {
         }
     }
 
+    /**
+     * Calls the close() method
+     */
     @Override
     protected void finalize() {
         close();

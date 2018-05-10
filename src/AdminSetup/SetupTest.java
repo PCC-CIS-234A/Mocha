@@ -18,6 +18,9 @@ public class SetupTest {
         showChooseActionOnTest();
     }
 
+    /**
+     * Shows the ChooseActionOnTest GUI
+     */
     public static void showChooseActionOnTest() {
         frame.getContentPane().removeAll();
         frame.setTitle("Admin Setup");
@@ -26,6 +29,9 @@ public class SetupTest {
         frame.setVisible(true);
     }
 
+    /**
+     * Shows the CreateTest GUI
+     */
     public static void showCreateTest() {
         frame.getContentPane().removeAll();
         frame.setTitle("Create Test");
@@ -34,6 +40,9 @@ public class SetupTest {
         frame.setVisible(true);
     }
 
+    /**
+     * Shows the EditTest GUI
+     */
     public static void showEditTest(int testID) {
         frame.getContentPane().removeAll();
         frame.setTitle("Edit Test");
@@ -42,6 +51,9 @@ public class SetupTest {
         frame.setVisible(true);
     }
 
+    /**
+     * Shows the ViewTest GUI
+     */
     public static void showViewTest(int testID) {
         frame.getContentPane().removeAll();
         frame.setTitle("View Test");

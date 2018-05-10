@@ -91,6 +91,9 @@ public class ChooseActionOnTest {
         });
     }
 
+    /**
+     * Performs the actions that will happen when the OK button is hit
+     */
     private void okButtonActionPerformed(ActionEvent e) {
         if (createTestRadioButton.isSelected()) {
             SetupTest.showCreateTest();
@@ -102,6 +105,9 @@ public class ChooseActionOnTest {
         }
     }
 
+    /**
+     * Decides which GUI should appear next
+     */
     public void showViewOrEditGUI(String testName) {
 
             for(Test test: tests) {
@@ -118,6 +124,9 @@ public class ChooseActionOnTest {
             }
     }
 
+    /**
+     * Gets the rootPanel
+     */
     public JPanel getRootPanel() {
         return rootPanel;
     }

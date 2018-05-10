@@ -131,6 +131,9 @@ public class CreateTest {
         });
     } //end constructor
 
+    /**
+     * Creates the test in the database along with its items
+     */
     public boolean createTestWithItems(String testName, ArrayList<String> itemStrings) {
 
         //Update Test
@@ -159,6 +162,9 @@ public class CreateTest {
 
     }
 
+    /**
+     * Adds a unique item to the list
+     */
     public void addUniqueItem() {
         Object[] objects = listModel.toArray();
 
@@ -185,6 +191,9 @@ public class CreateTest {
         }
     }
 
+    /**
+     * Checks that the name suggested by the admin will work
+     */
     public int checkTestName(String name) {
         int i;
         if(name.trim().length() > 0) {
@@ -206,6 +215,9 @@ public class CreateTest {
         return i;
     }
 
+    /**
+     * Compares the test name given by the admin against test names in the database
+     */
     public int compareTestNames(String name) {
         ArrayList<Test> tests = Test.getTestWithName(name);
         for(Test t: tests) {
@@ -216,6 +228,9 @@ public class CreateTest {
         return 0;
     }
 
+    /**
+     * After 1 second has gone by, will update the test names JLabel
+     */
     public void updateTestNameLabel(String text) {
         confirmTestNameJLabel.setText(null);
 
@@ -232,6 +247,9 @@ public class CreateTest {
 
     }
 
+    /**
+     * Enables or disables the Finish button
+     */
     public void enableFinishButton() {
         int numListEle = itemList.getModel().getSize();
 
@@ -242,6 +260,9 @@ public class CreateTest {
         }
     }
 
+    /**
+     * Closes the GUI and tells whether or not whatever it was trying to do was successful or not
+     */
     public void closeCreateTest(boolean success) {
 
         if(success == true) {
@@ -252,6 +273,9 @@ public class CreateTest {
         SetupTest.showChooseActionOnTest();
     }
 
+    /**
+     * Gets the rootPanel
+     */
     public JPanel getRootPanel() {
         return rootPanel;
     }

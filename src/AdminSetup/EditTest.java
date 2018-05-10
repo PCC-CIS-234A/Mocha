@@ -125,6 +125,9 @@ public class EditTest {
         });
     }
 
+    /**
+     * Adds an item to the list
+     */
     public void addItem(String suggestedItem) {
             Object[] objects = listModel.toArray();
 
@@ -155,6 +158,9 @@ public class EditTest {
 
     }
 
+    /**
+     * Sets up the TableAction for the items in the list
+     */
     public void setupTableAction(String suggestedItem) {
         int isNew = 1;
 
@@ -174,6 +180,9 @@ public class EditTest {
         }
     }
 
+    /**
+     * Enables or disables the finish button
+     */
     public void enableFinishButton() {
         int numListEle = itemList.getModel().getSize();
 
@@ -184,6 +193,9 @@ public class EditTest {
         }
     }
 
+    /**
+     * Inserts and deletes items in the database
+     */
     public boolean updateDBItems(ArrayList<Item> items) {
         ArrayList<Item> toDelete = new ArrayList<>();
         ArrayList<Item> toInsert = new ArrayList<>();
@@ -210,7 +222,9 @@ public class EditTest {
         return success;
     }
 
-
+    /**
+     * Tells whether or not whatever the admin was trying to do was successful or not before closing
+     */
     public void closeCreateTest(boolean success) {
         if(success == true) {
             JOptionPane.showMessageDialog(rootPanel, "Success!");
@@ -219,6 +233,9 @@ public class EditTest {
         }
     }
 
+    /**
+     * Gets rootPanel
+     */
     public JPanel getRootPanel() {
         return rootPanel;
     }

@@ -13,17 +13,25 @@ public class TestSession {
 
     TestSession (int testID) {
         myTestID = testID;
-
     }
 
+    /**
+     * Gets the TestID
+     */
     public int getTestID() {
         return myTestID;
     }
 
+    /**
+     * Sets the TestID
+     */
     public void setTestID(int testID) {
         myTestID = testID;
     }
 
+    /**
+     * Gets the all the TestIDs from the database of all tests already taken by a user
+     */
     public static ArrayList<TestSession> getTakenTests() {
         AdminSetupDB db = new AdminSetupDB();
         return db.getTakenTests();
