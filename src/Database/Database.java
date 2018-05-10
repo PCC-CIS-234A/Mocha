@@ -3,43 +3,63 @@ package Database;
 import java.sql.*;
 
 /**
- * @author Bobby Puckett
- * @version 5/3/2018
- * Description: This is an example class for the database communication class. Liz will replace this with her own
+ * Class to interact with the database
+ * @author Liz Goltz with input from team Mocha
+ * @version 4/4/2018
  */
 public class Database {
-    private static final String DB_NAME = "234a_Mocha";
-    private static final String DB_URL = "jdbc:jtds:sqlserver://cisdbss.pcc.edu/" + DB_NAME;
-    private static final String USERNAME = "234a_Mocha";
+    private static final String MOCHA_DB = "234a_Mocha";
+    private static final String SERVER = "cisdbss.pcc.edu";
+    private static final String USERNAME = "234a_Mocha"; //?is this the user taking test?
     private static final String PASSWORD = "@#$Mocha";
+    private static final String CONNECTION_STRING = "jdbc:jtds:sqlserver://" + SERVER + "/" + MOCHA_DB + ";user=" + USERNAME + ";password=" + PASSWORD;
+    public Connection mConnection = null;
 
     /**
-     * Create and return a connection to the database
-     * @return connection to the database
+     * Connects to the database
      */
-    private Connection getConnection() throws SQLException {
-        Connection connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
-        return connection;
+    public void connect() {
+        if (mConnection != null)
+            return;
+        try {
+            mConnection = DriverManager.getConnection(CONNECTION_STRING);
+            System.out.println("Connected to database.");
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
-     * executes a SQL query and returns the ResultSet or null if the code failed.
-     * @param sqlString the query to be executed
-     * @return either a ResultSet from the executed query or null
+     * Executes a query
+     * @param sqlString query to the database
+     * @return ResultSet object
      */
     public ResultSet execute(String sqlString) {
         try {
-            Connection connection = getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sqlString);
-            ResultSet resultSet = stmt.executeQuery();
-
-            return resultSet;
+            connect();
+            PreparedStatement statement = mConnection.prepareStatement(sqlString);
+            ResultSet rs = statement.executeQuery();
+            return rs;
         }
         catch (SQLException e) {
-            System.err.println("ERROR: " + e.getMessage());
-            e.printStackTrace();
-
+            System.out.println(e.getMessage());
             return null;
+        }
+    }
+
+    /**
+     * Closes connection to the database
+     */
+    public void close() {
+        if (mConnection != null) {
+            System.out.println("Closing database connection.");
+            try {
+                mConnection.close();
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

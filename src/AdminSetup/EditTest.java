@@ -15,7 +15,7 @@ public class EditTest {
     private JTextField itemTextField;
     private JButton addButton;
     private JButton deleteButton;
-    private JScrollPane itemScrollPane;
+    private JScrollPane itemScrollPane; //Doesn't do anything yet. I plan on using this for Sprint 2
     private JList itemList;
     private JButton cancelButton;
     private JButton finishButton; //Doesn't do anything yet
