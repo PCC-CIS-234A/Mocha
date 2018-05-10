@@ -93,7 +93,6 @@ public class ReportingItem extends Item implements Comparable<ReportingItem> {
         ties++;
     }
 
-
     /**
      * Gets all Items for a testSessionID, converts them to ReportingItems and returns them
      *
