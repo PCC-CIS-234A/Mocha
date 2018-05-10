@@ -6,6 +6,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/**
+ * @author Bobby Puckett
+ * @version 5/8/2018
+ *
+ * Description: Retrieves, stores, and manipulates a test from the Test table in the database
+ */
 public class Test {
     private int myTestID;
     private ArrayList<Item> myItems;

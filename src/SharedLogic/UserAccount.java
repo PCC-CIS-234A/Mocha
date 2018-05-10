@@ -2,16 +2,17 @@ package SharedLogic;
 
 import Database.Database;
 
+import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
- * @author Anh Nguyen abd bobby Puckett
- * @version 5/4/2018
- * Description: Create UserAccount Object
+ * @author Bobby Puckett and Ahn Nguyen
+ * @version 5/8/2018
+ *
+ * Description: Retrieves, stores, and manipulates a UserAccount from the UserAccount table in the database
  */
-
 public class UserAccount {
     private int myUserID;
     private String myUserName;
@@ -24,6 +25,7 @@ public class UserAccount {
     private static final String INSERT_USER = "INSERT INTO USERACCOUNT (UserName,Password,Email) VALUES('";
     private static final String GET_USER_ON_NAME_PASSWORD = "SELECT * FROM USERACCOUNT WHERE Email= '";
     private static final String GET_USER_ON_ID = "SELECT * FROM USERACCOUNT WHERE UserID = ";
+    private static final String GET_USERS_ON_ROLE = "SELECT * FROM USERACCOUNT WHERE Role = \'";
     // QUERY FIELDS END
 
 
@@ -101,6 +103,30 @@ public class UserAccount {
                 String newPassword = userResultSet.getString("Password");
                 String newEmail = userResultSet.getString("Email");
                 String role = userResultSet.getString("Role");
+
+                UserAccount user = new UserAccount(newUserID, newName, newPassword, newEmail, role);
+
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return users;
+    }
+
+    public static ArrayList<UserAccount> retrieveUsersOnRole(String role) {
+        ArrayList<UserAccount> users = new ArrayList<>();
+
+        Database database = new Database();
+
+        ResultSet userResultSet = database.execute(GET_USERS_ON_ROLE + role + "\'");
+        try {
+            while (userResultSet.next()) {
+                int newUserID = userResultSet.getInt("UserID");
+                String newName = userResultSet.getString("UserName");
+                String newPassword = userResultSet.getString("Password");
+                String newEmail = userResultSet.getString("Email");
 
                 UserAccount user = new UserAccount(newUserID, newName, newPassword, newEmail, role);
 

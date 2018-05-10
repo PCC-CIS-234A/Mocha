@@ -7,6 +7,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/**
+ * @author Bobby Puckett
+ * @version 5/8/2018
+ *
+ * Description: Retrieves, stores, and manipulates a test session from the TestSession table in the database
+ */
 public class TestSession {
     private int mySessionID;
     private Test myTest;
@@ -27,10 +33,25 @@ public class TestSession {
 
         this.myResults = Result.retrieveTestSessionResults(sessionID);
     }
+    public TestSession(int sessionID, Test test, UserAccount user, Date testDate, ArrayList<Result> allResults) {
+        this.mySessionID = sessionID;
+        this.myTest = test;
+        this.myUser = user;
+        this.myTestDate = testDate;
+        this.myResults = new ArrayList<>();
+
+        allResults.forEach(result -> {
+            if (result.getMySessionID() == sessionID) {
+                this.myResults.add(result);
+            }
+        });
+
+//        this.myResults = Result.retrieveTestSessionResults(sessionID);
+    }
     // CONSTRUCTORS END
 
     //DATABASE METHODS
-    public static ArrayList<TestSession> retrieveUserTestSessions(int userID) {
+    public static ArrayList<TestSession> retrieveTestSessionsOnUser(int userID) {
         ArrayList<TestSession> testSessions = new ArrayList<>();
 
         Database database = new Database();
@@ -56,14 +77,18 @@ public class TestSession {
 
         return testSessions;
     }
-    public static ArrayList<TestSession> retrieveUserTestSessions(UserAccount user) {
+
+    public static ArrayList<TestSession> retrieveTestSessionsOnUser(UserAccount user) {
         int userID = user.getMyUserID();
         ArrayList<TestSession> testSessions = new ArrayList<>();
 
         Database database = new Database();
 
         ResultSet testSessionsResultSet = database.execute(GET_TEST_SESSION_ON_USER + userID);
+
         try {
+            ArrayList<Result> allResults = Result.retrieveAllResults();
+
             while (testSessionsResultSet.next()) {
                 int newSessionID = testSessionsResultSet.getInt("SessionID");
                 int newTestID = testSessionsResultSet.getInt("TestID");
@@ -71,7 +96,7 @@ public class TestSession {
 
                 Test test = Test.retrieveTestOnID(newTestID);
 
-                TestSession testSession = new TestSession(newSessionID, test, user, newTestDate);
+                TestSession testSession = new TestSession(newSessionID, test, user, newTestDate, allResults);
 
                 testSessions.add(testSession);
             }

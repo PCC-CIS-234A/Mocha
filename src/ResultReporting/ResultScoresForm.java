@@ -2,6 +2,7 @@ package ResultReporting;
 
 import SharedLogic.*;
 
+import javax.print.DocFlavor;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -12,7 +13,8 @@ import java.util.Vector;
 
 /**
  * @author Bobby Puckett
- * @version 5/1/2018
+ * @version 5/8/2018
+ *
  * Description: Provides a way to communicate with the ResultScores GUI
  */
 public class ResultScoresForm {
@@ -29,6 +31,7 @@ public class ResultScoresForm {
     private Vector<String> testListVector;
     private DefaultTableModel resultsTableModel;
     private ArrayList<UserAccount> users;
+    private ArrayList<TestSession> testSessions;
 
     public ResultScoresForm(ArrayList<UserAccount> users) {
         resultScoresPanel.setPreferredSize(new Dimension(600, 400));
@@ -44,66 +47,33 @@ public class ResultScoresForm {
 
         initializeFinishButton();
     }
+    public ResultScoresForm() {
+        resultScoresPanel.setPreferredSize(new Dimension(600, 400));
 
+        //dimensions for sprint 2
+        //resultScoresPanel.setPreferredSize(new Dimension(800,400));
 
-    /**
-     * This method adds a test to the testList
-     *
-     * @param test the test object to be added
-     */
-    public void addTest(Test test) {
-        testListVector.add(test.getMyName());
-    }
+        this.users = UserAccount.retrieveUsersOnRole("user");
 
-    /**
-     * This method adds a row to the resultsTable
-     *
-     * @param reportingItem the reportingItem to be added
-     */
-    public void addReportingItem(ReportingItem reportingItem) {
-        Vector<String> rowData = new Vector<>();
+        this.testSessions = new ArrayList<>();
+        users.forEach(userAccount -> {
+            ArrayList<TestSession> userTestSessions = TestSession.retrieveTestSessionsOnUser(userAccount);
 
-        rowData.add(String.valueOf(reportingItem.getMyItemID()));
-        rowData.add(reportingItem.getMyName());
-        rowData.add(String.valueOf(reportingItem.getWins()));
-        rowData.add(String.valueOf(reportingItem.getLosses()));
-        rowData.add(String.valueOf(reportingItem.getTies()));
-
-        resultsTableModel.addRow(rowData);
-    }
-
-    /**
-     * deletes and reinstanciates the ResultTable
-     *
-     * @param selectedUser the user to get tests to repopulate the table from
-     */
-    private void repopulateResultTable(UserAccount selectedUser) {
-        int rowCount = resultsTableModel.getRowCount();
-
-        for (int i = 0; i < rowCount; i++) {
-            resultsTableModel.removeRow(0);
-        }
-
-        ArrayList<TestSession> userTestSessions =TestSession.retrieveUserTestSessions(selectedUser);
-        TestSession testSession;
-        if (userTestSessions.size() > 0) {
-            testSession = userTestSessions.get(0);
-            ArrayList<ReportingItem> test = ReportingItem.retrieveReportingItemsOnTest(testSession.getMyTest().getMyTestID());
-
-            for (ReportingItem i : test) {
-                addReportingItem(i);
+            if (userTestSessions != null) {
+                this.testSessions.addAll(userTestSessions);
             }
-        }
-        else {
-            System.out.println("The user has no test sessions");
-        }
+        });
 
+
+        initializeTestList();
+        initializeResultsTable();
+        initializeUserComboBox();
+
+        initializeFinishButton();
     }
 
-
-
     /**
-     * keeps the constructor short by initializing the testList
+     * Keeps the constructor short by initializing the testList
      */
     private void initializeTestList() {
         testListVector = new Vector<>();
@@ -115,12 +85,12 @@ public class ResultScoresForm {
     }
 
     /**
-     * keeps the constructor short by initializing the resultsTable
+     * Keeps the constructor short by initializing the resultsTable
      */
     private void initializeResultsTable() {
         resultsTableModel = new DefaultTableModel();
 
-        resultsTableModel.addColumn("User Name");
+        resultsTableModel.addColumn("Score");
         resultsTableModel.addColumn("Item");
         resultsTableModel.addColumn("Wins");
         resultsTableModel.addColumn("Losses");
@@ -130,7 +100,7 @@ public class ResultScoresForm {
     }
 
     /**
-     * keeps the constructor short by initializing the userComboBox.
+     * Keeps the constructor short by initializing the userComboBox.
      * <p>
      * Suppressing the unchecked warning because I'm using a non-primitive data type
      * and adding it to the ComboBox
@@ -150,7 +120,7 @@ public class ResultScoresForm {
     }
 
     /**
-     * keeps the constructor short by initializing the finishButton
+     * Keeps the constructor short by initializing the finishButton
      */
     private void initializeFinishButton() {
         finishButton.addActionListener(new ActionListener() {
@@ -159,6 +129,76 @@ public class ResultScoresForm {
                 System.exit(0);
             }
         });
+    }
+
+    /**
+     * Adds a test to the testList
+     *
+     * @param test the test object to be added
+     */
+    public void addTest(Test test) {
+        testListVector.add(test.getMyName());
+    }
+
+    /**
+     * Adds a row to the resultsTable
+     *
+     * @param reportingItem the reportingItem to be added
+     */
+    public void addReportingItem(ReportingItem reportingItem) {
+        Vector<String> rowData = new Vector<>();
+
+        rowData.add(String.valueOf(reportingItem.getScore()));
+        rowData.add(reportingItem.getMyName());
+        rowData.add(String.valueOf(reportingItem.getWins()));
+        rowData.add(String.valueOf(reportingItem.getLosses()));
+        rowData.add(String.valueOf(reportingItem.getTies()));
+
+        resultsTableModel.addRow(rowData);
+    }
+
+    /**
+     * Deletes and reinstanciates the ResultTable
+     *
+     * @param selectedUser the user to get tests to repopulate the table from
+     */
+    private void repopulateResultTable(UserAccount selectedUser) {
+        int rowCount = resultsTableModel.getRowCount();
+        for (int i = 0; i < rowCount; i++) {
+            resultsTableModel.removeRow(0);
+        }
+        ArrayList<TestSession> userTestSessions = new ArrayList<>();
+
+        testSessions.forEach(testSession -> {
+            if (testSession.getMyUser().getMyUserName() == selectedUser.getMyUserName()) {
+                userTestSessions.add(testSession);
+            }
+        });
+
+        TestSession testSession;
+
+        if (userTestSessions.size() > 0) {
+            testSession = userTestSessions.get(0);
+            ArrayList<ReportingItem> test = ReportingItem.retrieveReportingItemsOnTest(testSession.getMyTest().getMyTestID());
+
+            if (test.size() > 0) {
+                for (ReportingItem i : test) {
+                    addReportingItem(i);
+                }
+            }
+            else {
+                JOptionPane.showMessageDialog(null, selectedUser.getMyUserName() + " has not taken this test");
+            }
+        }
+
+        else {
+            if (selectedUser != null) {
+                JOptionPane.showMessageDialog(null, selectedUser.getMyUserName() + " has not taken any tests");
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "user has not taken any tests");
+            }
+        }
     }
 
     /**
