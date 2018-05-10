@@ -28,14 +28,6 @@
           </grid>
         </constraints>
       </vspacer>
-      <component id="aab97" class="javax.swing.JButton" binding="cancelButton">
-        <constraints>
-          <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Cancel"/>
-        </properties>
-      </component>
       <component id="d595b" class="javax.swing.JButton" binding="finishButton">
         <constraints>
           <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="2" fill="0" indent="0" use-parent-layout="false"/>

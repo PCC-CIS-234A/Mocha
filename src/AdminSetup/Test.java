@@ -5,15 +5,14 @@ import java.util.ArrayList;
 /**
  * @author Rebecca Kennedy
  * @version 5/2/2018.
+ * Description: This class represents a test from the database table TEST.
  */
 public class Test {
     private int myTestID;
     private String myName;
     private boolean editable = true;
 
-  //  Test (int testID, String name) {
     Test (String name) {
- //       myTestID = testID;
         myName = name;
     }
 
@@ -46,12 +45,6 @@ public class Test {
         AdminSetupDB db = new AdminSetupDB();
         return db.getTests();
     }
-
-    /*
-    public static ArrayList<Test> getTakenTests() {
-        AdminSetupDB db = new AdminSetupDB();
-        return db.getTakenTests();
-    }*/
 
     public static ArrayList<Test> getTestWithName(String name) {
         AdminSetupDB db = new AdminSetupDB();

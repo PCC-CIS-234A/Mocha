@@ -5,7 +5,8 @@ import javax.swing.*;
 /**
  * @author Rebecca Kennedy
  * @version 4/23/2018
- * Description: This is the controller class for the AdminSetup GUIs.
+ * Description: This class is responsible for displaying each of the GUIs
+ * in the AdminSetup package.
  */
 
 public class SetupTest {
