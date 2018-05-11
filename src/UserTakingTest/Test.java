@@ -1,5 +1,6 @@
 package UserTakingTest;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,31 +12,26 @@ import java.util.List;
 public class Test
 {
     private int sessionID;
+    private int testID;
+    private int userID;
     private String userName;
     private int collectionID;
     private ArrayList<Item> mCollection;
     private ArrayList<ItemPair> testQuestions;
     private MochaDB db;
 
-    public Test(int sessionID, String userName, int collectionID) {
-        this.sessionID = sessionID;
-        this.userName = userName;
-        this.collectionID = collectionID;
+    public Test(int userID, int collectionID) {
         db = new MochaDB();
+        this.userID = userID;
+        this.collectionID = collectionID;
+        testID = 1;
         mCollection = db.readItems(collectionID);
-    }
-
-    public ArrayList<Item> getCollection() { return mCollection; }
-
-    public void setCollection(int collectionID) {
-        this.mCollection = db.readItems(this.collectionID);
     }
 
     /**
      * Method to create a list of test questions of all the unique pairings from a list of items
      * @return testQuestions a list of item pairs /test questions
      */
-    //?should I set this as private?
     public ArrayList<ItemPair> makeTestQuestions () {
 
         testQuestions = new ArrayList<ItemPair>();
@@ -52,18 +48,21 @@ public class Test
     }
 
     public void saveTestAnswers (ArrayList<ItemPair> results) {
-        db.saveResults(results);
+        this.sessionID = getSessionID();
+        db.saveResults(sessionID, results);
     }
 
-    public ArrayList<ItemPair> getTestQuestions() {
-        return testQuestions;
-    }
+    public ArrayList<ItemPair> getTestQuestions() { return testQuestions; }
 
     public void setTestQuestions(ArrayList<String> mCollection) {
         this.testQuestions = makeTestQuestions();
     }
 
-    public int getSessionID() { return sessionID; }
+    public int getSessionID() {
+        TestSession mTestSession = db.assignSessionID(testID, userID);
+        this.sessionID = mTestSession.getSessionID();
+        return sessionID;
+    }
 
     public void setSessionID(int sessionID) {
         this.sessionID = sessionID;
@@ -76,12 +75,32 @@ public class Test
     public void setUserName(String userName) {
         this.userName = userName;
     }
-    //?login class?
-    public int getCollectionID() {
-        return collectionID;
-    }
+
+    public int getCollectionID() { return collectionID; }
 
     public void setCollectionID(int collectionID) {
         this.collectionID = collectionID;
+    }
+
+    public ArrayList<Item> getCollection() { return mCollection; }
+
+    public void setCollection(int collectionID) {
+        this.mCollection = db.readItems(this.collectionID);
+    }
+
+    public int getUserID() {
+        return userID;
+    }
+
+    public void setUserID(int userID) {
+        this.userID = userID;
+    }
+
+    public int getTestID() {
+        return testID;
+    }
+
+    public void setTestID(int testID) {
+        this.testID = testID;
     }
 }

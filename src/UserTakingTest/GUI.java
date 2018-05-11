@@ -33,15 +33,15 @@ public class GUI
     private static int mWin = 0;
 
     private static int mCollectionID = 1;
-    private static String mTestName = "";
-    private static String mUserName = "";
+ //   private static String mTestName = "";
+    private static int mUserID = 1;
     private static int mSessionID = 0;
 
     private static Test mTest;
     private static ArrayList<ItemPair> mTestQuestions;
 
     public GUI() {
-        mTest = new Test(mSessionID, mUserName, mCollectionID);
+        mTest = new Test(mUserID, mCollectionID);
         mTestQuestions = mTest.makeTestQuestions();
 
         rootPanel.setPreferredSize(new Dimension(300, 200));

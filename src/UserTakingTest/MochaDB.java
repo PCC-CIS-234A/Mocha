@@ -18,15 +18,7 @@ public class MochaDB {
     private static final String CONNECTION_STRING = "jdbc:jtds:sqlserver://"
             + SERVER + "/" + MOCHA_DB + ";user=" + USERNAME + ";password=" + PASSWORD;
     private Connection mConnection = null;
-
-    int sessionID = 2; //initialized and set to 0 so program would run, not sure how to get or set sessionID
-
-    /*database queries -not sure if I need these
-    private static final String ITEMS = "SELECT Name FROM ITEM WHERE CollectionID = ?";//read items into ArrayList
-    private static final String SESSION_ID = "SELECT TOP SessionID FROM ";
-    private static String input;
-
-    */
+    private static final String USER_ROLE = "user";
 
     private void connect() {
         if (mConnection != null)
@@ -65,6 +57,29 @@ public class MochaDB {
     }
 
     /**
+     * Insert a new row to the TESTSESSION table & assign unique SessionID
+     * @param testID
+     * @return TestSession
+     */
+    public TestSession assignSessionID(int testID, int userID) {
+        connect();
+       // String query = "INSERT INTO TESTSESSION (TestID, UserID) VALUES (?, ?);";
+        String query = "INSERT INTO TESTSESSION (TestID, UserID, TestDate) VALUES (?, ?, GETDATE()); SELECT SCOPE_IDENTITY() AS SessionID;";
+        try {
+            PreparedStatement stmt = mConnection.prepareStatement(query);
+            stmt.setInt(1, testID);
+            stmt.setInt(2, userID);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()) {
+                return new TestSession(rs.getInt("SessionID"), testID, userID, null);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
      * Update/save item pairing and test question result in the database
      *
      * @param item1ID ID of item1
@@ -93,7 +108,7 @@ public class MochaDB {
      * @param testResults ArrayList of paired item names and result
      */
 
-    public void saveResults(ArrayList<ItemPair> testResults) {
+    public void saveResults(int sessionID, ArrayList<ItemPair> testResults) {
         connect();
         //for each ItemPair result in the arraylist
         for (ItemPair result : testResults) {

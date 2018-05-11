@@ -14,7 +14,6 @@ public class Main {
     private static JFrame mFrame = null;
 
     private static void createGUI() {
-
         mFrame = new JFrame("Compare Items");
         mFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //  showNewTest()

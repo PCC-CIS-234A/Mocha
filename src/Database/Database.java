@@ -13,22 +13,22 @@ public class Database {
     private static final String USERNAME = "234a_Mocha"; //?is this the user taking test?
     private static final String PASSWORD = "@#$Mocha";
     private static final String CONNECTION_STRING = "jdbc:jtds:sqlserver://" + SERVER + "/" + MOCHA_DB + ";user=" + USERNAME + ";password=" + PASSWORD;
-    private Connection mConnection = null;
+    public Connection mConnection = null;
 
     /**
      * Connects to the database
      */
     public void connect() {
-            if (mConnection != null)
-                return;
-            try {
-                mConnection = DriverManager.getConnection(CONNECTION_STRING);
-                System.out.println("Connected to database.");
-            }
-            catch (SQLException e) {
-                e.printStackTrace();
-            }
+        if (mConnection != null)
+            return;
+        try {
+            mConnection = DriverManager.getConnection(CONNECTION_STRING);
+            System.out.println("Connected to database.");
         }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Executes a query
