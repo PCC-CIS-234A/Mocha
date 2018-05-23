@@ -23,7 +23,6 @@ public class ChooseActionOnTest {
     private JRadioButton createTestRadioButton;
     private JRadioButton editTestRadioButton;
     private JButton okButton;
-    //Back button doesn't do anything yet. Plan to have it return the user to the Login GUI in Sprint 2.
     private JButton backButton;
     private JScrollPane testScrollPane;
     private JList testList;
@@ -42,25 +41,9 @@ public class ChooseActionOnTest {
         listModel = new DefaultListModel();
         testList.setModel(listModel);
 
-        tests = Test.getTests();
+        addTestsToList();
 
-        //Add all tests to the list
-        for(Test test: tests) {
-            String listStr = test.getName();
-            listModel.addElement(listStr);
-        }
-
-        ArrayList<TestSession> takenTests = TestSession.getTakenTests();
-
-        for (Test t: tests) {
-
-            for (TestSession ts: takenTests) {
-
-                if(t.getTestID() == ts.getTestID()) {
-                    t.setEditable(false);
-                }
-            }
-        }
+        setNotEditable();
 
         createTestRadioButton.setSelected(true);
 
@@ -69,9 +52,7 @@ public class ChooseActionOnTest {
 
         testScrollPane.setVisible(true);
 
-        ButtonGroup radioGroup = new ButtonGroup();
-        radioGroup.add(createTestRadioButton);
-        radioGroup.add(editTestRadioButton);
+        setupRadioGroup();
 
         okButton.addActionListener(new ActionListener() {
             @Override
@@ -79,20 +60,25 @@ public class ChooseActionOnTest {
                 okButtonActionPerformed(e);
             }
         });
+
         editTestRadioButton.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if(e.getStateChange() == ItemEvent.SELECTED) {
-                    testJPanel.setVisible(true);
-                } else if (e.getStateChange() == ItemEvent.DESELECTED) {
-                    testJPanel.setVisible(false);
-                }
+                editTestRadioButtonActionPerformed(e);
+            }
+
+        });
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                backButtonActionPerformed(e);
             }
         });
-    }
+    } //end constructor
 
     /**
-     * Performs the actions that will happen when the OK button is hit
+     * Performs the actions that will happen when the OK button is pushed
      */
     private void okButtonActionPerformed(ActionEvent e) {
         if (createTestRadioButton.isSelected()) {
@@ -103,6 +89,25 @@ public class ChooseActionOnTest {
             String testName = obj.toString();
             showViewOrEditGUI(testName);
         }
+    }
+
+    /**
+     * Performs the actions that will happen when the Edit Test radio button is pushed
+     */
+    private void editTestRadioButtonActionPerformed(ItemEvent e) {
+        if(e.getStateChange() == ItemEvent.SELECTED) {
+            testJPanel.setVisible(true);
+        } else if (e.getStateChange() == ItemEvent.DESELECTED) {
+            testJPanel.setVisible(false);
+        }
+    }
+
+    /**
+     * Performs the actions that will happen when the Back button is pushed
+     */
+    private void backButtonActionPerformed(ActionEvent e) {
+        SetupTest.disposeGUI();
+        UserLogin.Main.createGUI();
     }
 
     /**
@@ -122,6 +127,46 @@ public class ChooseActionOnTest {
                     }
                 }
             }
+    }
+
+    /**
+     * Sets the editable variable for tests that have been taken to not editable
+     */
+    public void setNotEditable() {
+        ArrayList<TestSession> takenTests = TestSession.getTakenTests();
+
+        for (Test t: tests) {
+
+            for (TestSession ts: takenTests) {
+
+                if(t.getTestID() == ts.getTestID()) {
+                    t.setEditable(false);
+                }
+            }
+        }
+    }
+
+    /**
+     * Gets all the tests and adds them to the list
+     */
+    public void addTestsToList() {
+        //Get all tests
+        tests = Test.getTests();
+
+        //Add all tests to the list
+        for(Test test: tests) {
+            String listStr = test.getName();
+            listModel.addElement(listStr);
+        }
+    }
+
+    /**
+     * Sets up the radio button group
+     */
+    public void setupRadioGroup() {
+        ButtonGroup radioGroup = new ButtonGroup();
+        radioGroup.add(createTestRadioButton);
+        radioGroup.add(editTestRadioButton);
     }
 
     /**

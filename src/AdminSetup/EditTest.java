@@ -35,12 +35,7 @@ public class EditTest {
 
         listModel = new DefaultListModel();
 
-        items = Item.getTestItems(myTestID);
-
-        for(Item item: items) {
-            item.setTableAction(Item.TableAction.KEEP);
-            listModel.addElement(item.getName());
-        }
+        setInitialKeep();
 
         enableFinishButton();
 
@@ -49,50 +44,21 @@ public class EditTest {
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String str = itemTextField.getText();
-                addItem(str);
-
-                enableFinishButton();
-
-                itemTextField.setText(null);
-                itemTextField.requestFocusInWindow();
+                addActionPerformed(e);
             }
         });
 
         itemTextField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String str = itemTextField.getText();
-                addItem(str);
-
-                enableFinishButton();
-
-                itemTextField.setText(null);
-                itemTextField.requestFocusInWindow();
+                addActionPerformed(e);
             }
         });
 
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (itemList.isSelectionEmpty() == false) {
-                    int selectedIndex = itemList.getSelectedIndex();
-
-                if(selectedIndex != -1) {
-                    Object obj = listModel.getElementAt(selectedIndex);
-                    String str= obj.toString();
-
-                    //set the TableAction of the item being deleted
-                    for(Item item: items) {
-                        if(item.getName().equals(str)) {
-                            item.setTableAction(Item.TableAction.DEL);
-                        }
-                    }
-                    listModel.remove(selectedIndex);
-                }
-
-                    enableFinishButton();
-                }
+                deleteButtonActionPerformed(e);
             }
         });
 
@@ -106,23 +72,75 @@ public class EditTest {
         finishButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                boolean viewOnly = true;
-                for(Item item: items) {
-                    if (item.getTableAction() != Item.TableAction.KEEP) {
-                        viewOnly = false;
-                    }
-                }
-
-                if(viewOnly == false) {
-                    boolean success = updateDBItems(items);
-                    closeCreateTest(success);
-                    SetupTest.showChooseActionOnTest();
-                } else {
-                    SetupTest.showChooseActionOnTest();
-                }
+                finishButtonActionPerformed(e);
             }
         });
+    } //end constructor
+
+    /**
+     * Performs the actions that will happen when the OK button is pushed
+     */
+    private void addActionPerformed(ActionEvent e) {
+        String str = itemTextField.getText();
+        addItem(str);
+
+        enableFinishButton();
+
+        focusOnItemTextField();
+    }
+
+    /**
+     * Focuses on itemTextField
+     */
+    public void focusOnItemTextField() {
+        itemTextField.setText(null);
+        itemTextField.requestFocusInWindow();
+    }
+
+    /**
+     * Performs the actions that will happen when the Delete button is pushed
+     */
+    private void deleteButtonActionPerformed(ActionEvent e) {
+        if (itemList.isSelectionEmpty() == false) {
+            int selectedIndex = itemList.getSelectedIndex();
+
+            if(selectedIndex != -1) {
+                Object obj = listModel.getElementAt(selectedIndex);
+                String str= obj.toString();
+
+                //set the TableAction of the item being deleted
+                for(Item item: items) {
+                    if(item.getName().equals(str)) {
+                        item.setTableAction(Item.TableAction.DEL);
+                    }
+                }
+                listModel.remove(selectedIndex);
+            }
+
+            enableFinishButton();
+        }
+    }
+
+    /**
+     * Performs the actions that will happen when the Finish button is pushed
+     */
+    private void finishButtonActionPerformed(ActionEvent e) {
+
+        boolean viewOnly = true;
+        for(Item item: items) {
+            if (item.getTableAction() != Item.TableAction.KEEP) {
+                viewOnly = false;
+            }
+        }
+
+        if(viewOnly == false) {
+            boolean success = updateDBItems(items);
+            closeCreateTest(success);
+            SetupTest.showChooseActionOnTest();
+        } else {
+            SetupTest.showChooseActionOnTest();
+        }
+
     }
 
     /**
@@ -230,6 +248,19 @@ public class EditTest {
             JOptionPane.showMessageDialog(rootPanel, "Success!");
         } else if(success == false) {
             JOptionPane.showMessageDialog(rootPanel, "Failed");
+        }
+    }
+
+    /**
+     * Sets all items to KEEP as the initial enum value
+     */
+    public void setInitialKeep() {
+        //gets items belonging to this test from database
+        items = Item.getTestItems(myTestID);
+
+        for (Item item : items) {
+            item.setTableAction(Item.TableAction.KEEP);
+            listModel.addElement(item.getName());
         }
     }
 
