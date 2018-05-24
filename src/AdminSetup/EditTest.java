@@ -22,7 +22,7 @@ public class EditTest {
     private JButton finishButton;
     private JPanel actionButtonPanel;
     private JLabel uniqueItemJLabel;
-    private ArrayList<Item> items;
+    private ArrayList<AdminSetupItem> items;
     private DefaultListModel listModel;
     private int myTestID;
 
@@ -35,12 +35,7 @@ public class EditTest {
 
         listModel = new DefaultListModel();
 
-        items = Item.getTestItems(myTestID);
-
-        for(Item item: items) {
-            item.setTableAction(Item.TableAction.KEEP);
-            listModel.addElement(item.getName());
-        }
+        setInitialKeep();
 
         enableFinishButton();
 
@@ -49,50 +44,21 @@ public class EditTest {
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String str = itemTextField.getText();
-                addItem(str);
-
-                enableFinishButton();
-
-                itemTextField.setText(null);
-                itemTextField.requestFocusInWindow();
+                addActionPerformed(e);
             }
         });
 
         itemTextField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String str = itemTextField.getText();
-                addItem(str);
-
-                enableFinishButton();
-
-                itemTextField.setText(null);
-                itemTextField.requestFocusInWindow();
+                addActionPerformed(e);
             }
         });
 
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (itemList.isSelectionEmpty() == false) {
-                    int selectedIndex = itemList.getSelectedIndex();
-
-                if(selectedIndex != -1) {
-                    Object obj = listModel.getElementAt(selectedIndex);
-                    String str= obj.toString();
-
-                    //set the TableAction of the item being deleted
-                    for(Item item: items) {
-                        if(item.getName().equals(str)) {
-                            item.setTableAction(Item.TableAction.DEL);
-                        }
-                    }
-                    listModel.remove(selectedIndex);
-                }
-
-                    enableFinishButton();
-                }
+                deleteButtonActionPerformed(e);
             }
         });
 
@@ -106,23 +72,75 @@ public class EditTest {
         finishButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                boolean viewOnly = true;
-                for(Item item: items) {
-                    if (item.getTableAction() != Item.TableAction.KEEP) {
-                        viewOnly = false;
-                    }
-                }
-
-                if(viewOnly == false) {
-                    boolean success = updateDBItems(items);
-                    closeCreateTest(success);
-                    SetupTest.showChooseActionOnTest();
-                } else {
-                    SetupTest.showChooseActionOnTest();
-                }
+                finishButtonActionPerformed(e);
             }
         });
+    } //end constructor
+
+    /**
+     * Performs the actions that will happen when the OK button is pushed
+     */
+    private void addActionPerformed(ActionEvent e) {
+        String str = itemTextField.getText();
+        addItem(str);
+
+        enableFinishButton();
+
+        focusOnItemTextField();
+    }
+
+    /**
+     * Focuses on itemTextField
+     */
+    public void focusOnItemTextField() {
+        itemTextField.setText(null);
+        itemTextField.requestFocusInWindow();
+    }
+
+    /**
+     * Performs the actions that will happen when the Delete button is pushed
+     */
+    private void deleteButtonActionPerformed(ActionEvent e) {
+        if (itemList.isSelectionEmpty() == false) {
+            int selectedIndex = itemList.getSelectedIndex();
+
+            if(selectedIndex != -1) {
+                Object obj = listModel.getElementAt(selectedIndex);
+                String str= obj.toString();
+
+                //set the TableAction of the item being deleted
+                for(AdminSetupItem item: items) {
+                    if(item.getMyName().equals(str)) {
+                        item.setTableAction(AdminSetupItem.TableAction.DEL);
+                    }
+                }
+                listModel.remove(selectedIndex);
+            }
+
+            enableFinishButton();
+        }
+    }
+
+    /**
+     * Performs the actions that will happen when the Finish button is pushed
+     */
+    private void finishButtonActionPerformed(ActionEvent e) {
+
+        boolean viewOnly = true;
+        for(AdminSetupItem item: items) {
+            if (item.getTableAction() != AdminSetupItem.TableAction.KEEP) {
+                viewOnly = false;
+            }
+        }
+
+        if(viewOnly == false) {
+            boolean success = updateDBItems(items);
+            closeCreateTest(success);
+            SetupTest.showChooseActionOnTest();
+        } else {
+            SetupTest.showChooseActionOnTest();
+        }
+
     }
 
     /**
@@ -165,17 +183,17 @@ public class EditTest {
         int isNew = 1;
 
         //set the TableAction of the item being added back in after previously being deleted
-        for(Item item: items) {
-            if(suggestedItem.equals(item.getName())) {
-                item.setTableAction(Item.TableAction.KEEP);
+        for(AdminSetupItem item: items) {
+            if(suggestedItem.equals(item.getMyName())) {
+                item.setTableAction(AdminSetupItem.TableAction.KEEP);
                 isNew = 0;
             }
         }
 
         //add new item and set it to ins
         if(isNew == 1) {
-            Item newItem = new Item(myTestID, suggestedItem);
-            newItem.setTableAction(Item.TableAction.INS);
+            AdminSetupItem newItem = new AdminSetupItem(myTestID, suggestedItem);
+            newItem.setTableAction(AdminSetupItem.TableAction.INS);
             items.add(newItem);
         }
     }
@@ -196,27 +214,25 @@ public class EditTest {
     /**
      * Inserts and deletes items in the database
      */
-    public boolean updateDBItems(ArrayList<Item> items) {
-        ArrayList<Item> toDelete = new ArrayList<>();
-        ArrayList<Item> toInsert = new ArrayList<>();
+    public boolean updateDBItems(ArrayList<AdminSetupItem> items) {
+        ArrayList<AdminSetupItem> toDelete = new ArrayList<>();
+        ArrayList<AdminSetupItem> toInsert = new ArrayList<>();
 
-        for (Item item: items) {
-            if(item.getTableAction() == Item.TableAction.DEL) {
+        for (AdminSetupItem item: items) {
+            if(item.getTableAction() == AdminSetupItem.TableAction.DEL) {
                 toDelete.add(item);
-            } else if(item.getTableAction() == Item.TableAction.INS) {
+            } else if(item.getTableAction() == AdminSetupItem.TableAction.INS) {
                 toInsert.add(item);
             }
         }
 
         boolean success = false;
         if(toDelete.isEmpty() == false) {
-            AdminSetupDB db = new AdminSetupDB();
-            success = db.deleteItems(toDelete);
+            success = SharedLogic.Item.deleteItems(toDelete);
         }
 
         if(toInsert.isEmpty() == false) {
-            AdminSetupDB db = new AdminSetupDB();
-            success = db.insertItems(toInsert);
+            success = SharedLogic.Item.insertItems(toInsert);
         }
 
         return success;
@@ -230,6 +246,19 @@ public class EditTest {
             JOptionPane.showMessageDialog(rootPanel, "Success!");
         } else if(success == false) {
             JOptionPane.showMessageDialog(rootPanel, "Failed");
+        }
+    }
+
+    /**
+     * Sets all items to KEEP as the initial enum value
+     */
+    public void setInitialKeep() {
+        //gets items belonging to this test from database
+        items = AdminSetupItem.retrieveItemsOnTestAsAdminSetupItem(myTestID);
+
+        for (AdminSetupItem item : items) {
+            item.setTableAction(AdminSetupItem.TableAction.KEEP);
+            listModel.addElement(item.getMyName());
         }
     }
 

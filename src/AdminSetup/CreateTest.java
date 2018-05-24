@@ -34,41 +34,29 @@ public class CreateTest {
     public CreateTest() {
         rootPanel.setPreferredSize(new Dimension(400, 300));
 
-        actionButtonPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
-
         finishButton.setEnabled(false);
 
-        nameTestPanel.setBorder(BorderFactory.createTitledBorder("Name Test"));
-        addItemPanel.setBorder(BorderFactory.createTitledBorder("Add Items"));
+        setupBorders();
 
         confirmTestNameJLabel.setVisible(false);
 
         listModel = new DefaultListModel();
 
-        itemTextField.setText(null);
-        itemTextField.requestFocusInWindow();
+        focusOnItemTextField();
 
         itemList.setModel(listModel);
 
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addUniqueItem();
-                enableFinishButton();
-
-                itemTextField.setText(null);
-                itemTextField.requestFocusInWindow();
+                addActionPerformed(e);
             }
         });
 
         itemTextField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addUniqueItem();
-                enableFinishButton();
-
-                itemTextField.setText(null);
-                itemTextField.requestFocusInWindow();
+                addActionPerformed(e);
             }
         });
 
@@ -82,34 +70,14 @@ public class CreateTest {
         finishButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String testName = testNameTextField.getText();
-                Object[] objects = listModel.toArray();
-                ArrayList<String> items = new ArrayList<>();
-
-                //Get strings in in the list
-                for (Object obj: objects) {
-                    items.add(obj.toString());
-                }
-
-                int i = checkTestName(testName);
-
-                if(i == 1) {
-                    boolean success = createTestWithItems(testName, items);
-                    closeCreateTest(success);
-                }
+                finishButtonActionPerformed(e);
             }
         });
 
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (itemList.isSelectionEmpty() == false) {
-                    int selectedIndex = itemList.getSelectedIndex();
-
-                    listModel.remove(selectedIndex);
-
-                    enableFinishButton();
-                }
+                deleteButtonActionPerformed(e);
             }
         });
 
@@ -132,27 +100,88 @@ public class CreateTest {
     } //end constructor
 
     /**
+     * Performs the actions that will happen when the OK button is pushed
+     */
+    private void addActionPerformed(ActionEvent e) {
+        addUniqueItem();
+        enableFinishButton();
+
+        focusOnItemTextField();
+    }
+
+    /**
+     * Focuses on itemTextField
+     */
+    public void focusOnItemTextField() {
+        itemTextField.setText(null);
+        itemTextField.requestFocusInWindow();
+    }
+
+    /**
+     * Performs the actions that will happen when the Finish button is pushed
+     */
+    private void finishButtonActionPerformed(ActionEvent e) {
+        String testName = testNameTextField.getText();
+        Object[] objects = listModel.toArray();
+        ArrayList<String> items = new ArrayList<>();
+
+        //Get strings in in the list
+        for (Object obj: objects) {
+            items.add(obj.toString());
+        }
+
+        int i = checkTestName(testName);
+
+        if(i == 1) {
+            boolean success = createTestWithItems(testName, items);
+            closeCreateTest(success);
+        }
+    }
+
+    /**
+     * Performs the actions that will happen when the Delete button is pushed
+     */
+    private void deleteButtonActionPerformed(ActionEvent e) {
+        if (itemList.isSelectionEmpty() == false) {
+            int selectedIndex = itemList.getSelectedIndex();
+
+            listModel.remove(selectedIndex);
+
+            enableFinishButton();
+        }
+    }
+
+    /**
+     * Sets up numerous borders for the GUI
+     */
+    public void setupBorders() {
+        nameTestPanel.setBorder(BorderFactory.createTitledBorder("Name Test"));
+        addItemPanel.setBorder(BorderFactory.createTitledBorder("Add Items"));
+        actionButtonPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
+    }
+
+    /**
      * Creates the test in the database along with its items
      */
     public boolean createTestWithItems(String testName, ArrayList<String> itemStrings) {
 
         //Update Test
-        AdminSetupDB db = new AdminSetupDB();
-        Test test = new Test(testName);
-        boolean testSuccess = db.insertTest(test);
+      //  AdminSetupDB db = new AdminSetupDB();
+        AdminSetupTest test = new AdminSetupTest(testName);
+        boolean testSuccess = SharedLogic.Test.insertTest(test);
 
         //Get test id from database
-        int testID = Test.getTestID(testName);
+        int testID = SharedLogic.Test.retrieveTestID(testName);
 
         //Update Items
-        ArrayList<Item> items = new ArrayList<>();
+        ArrayList<AdminSetupItem> items = new ArrayList<>();
 
         for(String str: itemStrings) {
-            Item item = new Item(testID, str);
+            AdminSetupItem item = new AdminSetupItem(testID, str);
             items.add(item);
         }
 
-        boolean itemSuccess = db.insertItems(items);
+        boolean itemSuccess = SharedLogic.Item.insertItems(items);
 
         if(testSuccess == true && itemSuccess == true) {
             return true;
@@ -219,9 +248,9 @@ public class CreateTest {
      * Compares the test name given by the admin against test names in the database
      */
     public int compareTestNames(String name) {
-        ArrayList<Test> tests = Test.getTestWithName(name);
-        for(Test t: tests) {
-            if(t.getName() != null) {
+        ArrayList<SharedLogic.Test> tests = SharedLogic.Test.getTestWithName(name);
+        for(SharedLogic.Test t: tests) {
+            if(t.getMyName() != null) {
                 return -1;
             }
         }
