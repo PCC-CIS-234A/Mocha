@@ -51,6 +51,9 @@ public class GUI
             public void actionPerformed(ActionEvent e) {
                 JRadioButton button = (JRadioButton) e.getSource();
                 System.out.println("Got click on " + button.getText());
+                winItem = getSelectedButton(radioGroup);
+                System.out.println(winItem);
+                mTestQuestions.get(position).setWinItem(winItem);
             }
         };
 
@@ -60,15 +63,11 @@ public class GUI
 
         nextButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                winItem = getSelectedButton(radioGroup);
-                System.out.println(winItem);
-                mTestQuestions.get(position).setWinItem(winItem);
+            public void actionPerformed(ActionEvent e) {
                 nextQuestion();
             }
         });
     }
-
 
     private void displayQuestion() {
         ItemPair currentQuestion = mTestQuestions.get(position);
