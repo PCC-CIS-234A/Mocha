@@ -17,7 +17,7 @@ public class ViewTest {
     private JScrollPane itemScrollPane;
     private JList itemList;
     private JButton finishButton;
-    private ArrayList<Item> items;
+    private ArrayList<SharedLogic.Item> items;
     private DefaultListModel listModel;
     private int myTestID;
 
@@ -29,7 +29,7 @@ public class ViewTest {
         listModel = new DefaultListModel();
         itemList.setModel(listModel);
 
-        items = Item.getTestItems(myTestID);
+        items = SharedLogic.Item.retrieveItemsOnTest(myTestID);
 
          addItemsToList();
 
@@ -59,8 +59,8 @@ public class ViewTest {
      * Add all items to the list
      */
     public void addItemsToList() {
-        for(Item item: items) {
-            listModel.addElement(item.getName());
+        for(SharedLogic.Item item: items) {
+            listModel.addElement(item.getMyName());
         }
     }
 

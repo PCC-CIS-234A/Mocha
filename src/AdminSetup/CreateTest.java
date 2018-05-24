@@ -166,22 +166,22 @@ public class CreateTest {
     public boolean createTestWithItems(String testName, ArrayList<String> itemStrings) {
 
         //Update Test
-        AdminSetupDB db = new AdminSetupDB();
-        Test test = new Test(testName);
-        boolean testSuccess = db.insertTest(test);
+      //  AdminSetupDB db = new AdminSetupDB();
+        AdminSetupTest test = new AdminSetupTest(testName);
+        boolean testSuccess = SharedLogic.Test.insertTest(test);
 
         //Get test id from database
-        int testID = Test.getTestID(testName);
+        int testID = SharedLogic.Test.retrieveTestID(testName);
 
         //Update Items
-        ArrayList<Item> items = new ArrayList<>();
+        ArrayList<AdminSetupItem> items = new ArrayList<>();
 
         for(String str: itemStrings) {
-            Item item = new Item(testID, str);
+            AdminSetupItem item = new AdminSetupItem(testID, str);
             items.add(item);
         }
 
-        boolean itemSuccess = db.insertItems(items);
+        boolean itemSuccess = SharedLogic.Item.insertItems(items);
 
         if(testSuccess == true && itemSuccess == true) {
             return true;
@@ -248,9 +248,9 @@ public class CreateTest {
      * Compares the test name given by the admin against test names in the database
      */
     public int compareTestNames(String name) {
-        ArrayList<Test> tests = Test.getTestWithName(name);
-        for(Test t: tests) {
-            if(t.getName() != null) {
+        ArrayList<SharedLogic.Test> tests = SharedLogic.Test.getTestWithName(name);
+        for(SharedLogic.Test t: tests) {
+            if(t.getMyName() != null) {
                 return -1;
             }
         }

@@ -27,7 +27,7 @@ public class ChooseActionOnTest {
     private JScrollPane testScrollPane;
     private JList testList;
     private JPanel testJPanel;
-    private ArrayList<Test> tests;
+    private ArrayList<AdminSetupTest> tests;
     private DefaultListModel listModel;
 
     public ChooseActionOnTest() {
@@ -115,14 +115,14 @@ public class ChooseActionOnTest {
      */
     public void showViewOrEditGUI(String testName) {
 
-            for(Test test: tests) {
-                if(test.getName().equals(testName)) {
+            for(AdminSetupTest test: tests) {
+                if(test.getMyName().equals(testName)) {
                     boolean editable = test.getEditable();
                     if(editable == true) {
-                        int id = test.getTestID();
+                        int id = test.getMyTestID();
                         SetupTest.showEditTest(id);
                     } else if (editable == false) {
-                        int id = test.getTestID();
+                        int id = test.getMyTestID();
                         SetupTest.showViewTest(id);
                     }
                 }
@@ -133,13 +133,12 @@ public class ChooseActionOnTest {
      * Sets the editable variable for tests that have been taken to not editable
      */
     public void setNotEditable() {
-        ArrayList<TestSession> takenTests = TestSession.getTakenTests();
+        ArrayList<SharedLogic.TestSession> takenTests = SharedLogic.TestSession.retrieveTakenTests();
 
-        for (Test t: tests) {
+        for (AdminSetupTest t: tests) {
 
-            for (TestSession ts: takenTests) {
-
-                if(t.getTestID() == ts.getTestID()) {
+            for (SharedLogic.TestSession ts: takenTests) {
+                if(t.getMyTestID() == ts.getMyTestID()) {
                     t.setEditable(false);
                 }
             }
@@ -151,11 +150,11 @@ public class ChooseActionOnTest {
      */
     public void addTestsToList() {
         //Get all tests
-        tests = Test.getTests();
+        tests = AdminSetupTest.retrieveAllTestsAsAdminSetupTest();
 
         //Add all tests to the list
-        for(Test test: tests) {
-            String listStr = test.getName();
+        for(AdminSetupTest test: tests) {
+            String listStr = test.getMyName();
             listModel.addElement(listStr);
         }
     }
