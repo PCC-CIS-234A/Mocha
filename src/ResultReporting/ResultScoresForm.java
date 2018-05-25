@@ -30,45 +30,18 @@ public class ResultScoresForm {
 
     private Vector<String> testListVector;
     private DefaultTableModel resultsTableModel;
-    private ArrayList<UserAccount> users;
-    private ArrayList<TestSession> testSessions;
+    private Data data;
 
-    public ResultScoresForm(ArrayList<UserAccount> users) {
-        resultScoresPanel.setPreferredSize(new Dimension(600, 400));
-
-        //dimensions for sprint 2
-        //resultScoresPanel.setPreferredSize(new Dimension(800,400));
-
-        this.users = users;
-
-        initializeTestList();
-        initializeResultsTable();
-        initializeUserComboBox();
-
-        initializeFinishButton();
-    }
     public ResultScoresForm() {
         resultScoresPanel.setPreferredSize(new Dimension(600, 400));
 
         //dimensions for sprint 2
         //resultScoresPanel.setPreferredSize(new Dimension(800,400));
-
-        this.users = UserAccount.retrieveUsersOnRole("user");
-
-        this.testSessions = new ArrayList<>();
-        users.forEach(userAccount -> {
-            ArrayList<TestSession> userTestSessions = TestSession.retrieveTestSessionsOnUser(userAccount);
-
-            if (userTestSessions != null) {
-                this.testSessions.addAll(userTestSessions);
-            }
-        });
-
+        data = new Data();
 
         initializeTestList();
         initializeResultsTable();
         initializeUserComboBox();
-
         initializeFinishButton();
     }
 
@@ -77,7 +50,6 @@ public class ResultScoresForm {
      */
     private void initializeTestList() {
         testListVector = new Vector<>();
-        //@todo make sure this still works
         testList.setListData(testListVector);
 
         //disabling test pannel for first sprint
@@ -108,8 +80,10 @@ public class ResultScoresForm {
     @SuppressWarnings("unchecked")
     private void initializeUserComboBox() {
 
-        for (UserAccount u : users) {
-            userComboBox.addItem(u);
+        for (UserAccount u : data.getUsers()) {
+            if (u.getMyRole().equals("user")) {
+                userComboBox.addItem(u);
+            }
         }
 
         userComboBox.addActionListener(e -> {
@@ -169,8 +143,8 @@ public class ResultScoresForm {
         }
         ArrayList<TestSession> userTestSessions = new ArrayList<>();
 
-        testSessions.forEach(testSession -> {
-            if (testSession.getMyUser().getMyUserName() == selectedUser.getMyUserName()) {
+        data.getTestSessions().forEach(testSession -> {
+            if (testSession.getMyUser().getMyUserName().equals(selectedUser.getMyUserName())) {
                 userTestSessions.add(testSession);
             }
         });
@@ -179,15 +153,23 @@ public class ResultScoresForm {
 
         if (userTestSessions.size() > 0) {
             testSession = userTestSessions.get(0);
-            ArrayList<ReportingItem> test = ReportingItem.retrieveReportingItemsOnTest(testSession.getMyTest().getMyTestID());
+            ArrayList<Result> results = new ArrayList<>();
 
-            if (test.size() > 0) {
-                for (ReportingItem i : test) {
+            data.getResults().forEach(dataResult -> {
+                if (dataResult.getMySessionID() == testSession.getMySessionID()) {
+                    results.add(dataResult);
+                }
+            });
+
+            ArrayList<ReportingItem> reportingItems = ReportingItem.buildReportingItems(results);
+
+            if (reportingItems.size() > 0) {
+                for (ReportingItem i : reportingItems) {
                     addReportingItem(i);
                 }
             }
             else {
-                JOptionPane.showMessageDialog(null, selectedUser.getMyUserName() + " has not taken this test");
+                JOptionPane.showMessageDialog(null, selectedUser.getMyUserName() + " has not taken this reportingItems");
             }
         }
 

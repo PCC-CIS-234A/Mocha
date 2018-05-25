@@ -93,6 +93,59 @@ public class ReportingItem extends Item implements Comparable<ReportingItem> {
         ties++;
     }
 
+    public static ArrayList<ReportingItem> buildReportingItems(ArrayList<Result> results) {
+        ArrayList<ReportingItem> reportingItems = new ArrayList<>();
+
+        for (Result result : results) {
+            int winnerExists = -1;
+            int loserExists = -1;
+            if (result.getTies().size() == 0) {
+                Item winner = result.getWinner();
+                Item loser = result.getLoser();
+
+                winnerExists = checkForResult(reportingItems, winner);
+                loserExists = checkForResult(reportingItems, loser);
+
+                if (winnerExists != -1) {
+                    reportingItems.get(winnerExists).addWin();
+                } else {
+                    ReportingItem newReportingItem = new ReportingItem(winner);
+                    newReportingItem.addWin();
+                    reportingItems.add(newReportingItem);
+                }
+
+                if (loserExists != -1) {
+                    reportingItems.get(loserExists).addLoss();
+                } else {
+                    ReportingItem newReportingItem = new ReportingItem(loser);
+                    newReportingItem.addLoss();
+                    reportingItems.add(newReportingItem);
+                }
+
+            }
+            else {
+                ArrayList<Item> ties = result.getTies();
+
+                for (Item tie : ties) {
+                    int tieIndex = checkForResult(reportingItems, tie);
+
+                    if (tieIndex != -1) {
+                        reportingItems.get(tieIndex).addTie();
+                    }
+                    else {
+                        ReportingItem newReportingItem = new ReportingItem(tie);
+                        newReportingItem.addTie();
+                        reportingItems.add(newReportingItem);
+                    }
+                }
+            }
+        }
+
+        Collections.sort(reportingItems);
+
+        return reportingItems;
+    }
+
     /**
      * Gets all Items for a testSessionID, converts them to ReportingItems and returns them
      *

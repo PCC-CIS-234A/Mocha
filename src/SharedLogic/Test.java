@@ -60,7 +60,7 @@ public class Test {
      * Note: this method was migrated from Rebecca's(?) code. It used to be called "getTests()"
      * @return
      */
-    public ArrayList<Test> retrieveAllTests() {
+    public static ArrayList<Test> retrieveAllTests() {
         ArrayList<Test> tests = new ArrayList<>();
 
         Database database = new Database();
@@ -72,6 +72,36 @@ public class Test {
                 int testID = testsResultSet.getInt("TestID");
                 ArrayList<Item> items = Item.retrieveItemsOnTest(testID);
                 String name = testsResultSet.getString("Name");
+
+                Test test = new Test(items, name, testID);
+
+                tests.add(test);
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return tests;
+    }
+    public static ArrayList<Test> retrieveAllTests(ArrayList<Item> allItems) {
+        ArrayList<Test> tests = new ArrayList<>();
+
+        Database database = new Database();
+
+        try {
+            ResultSet testsResultSet = database.execute(GET_ALL_TESTS);
+
+            while (testsResultSet.next()) {
+                int testID = testsResultSet.getInt("TestID");
+                ArrayList<Item> items = new ArrayList<>();// = Item.retrieveItemsOnTest(testID);
+                String name = testsResultSet.getString("Name");
+
+                allItems.forEach(item -> {
+                    if (item.getMyItemID() == testID) {
+                        items.add(item);
+                    }
+                });
 
                 Test test = new Test(items, name, testID);
 

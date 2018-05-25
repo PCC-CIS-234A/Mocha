@@ -22,6 +22,7 @@ public class TestSession {
 
     // QUERY FIELDS
     private static final String GET_TEST_SESSION_ON_USER = "SELECT * FROM TESTSESSION WHERE UserID = ";
+    private static final String GET_ALL_TEST_SESSIONS = "SELECT * FROM TESTSESSION";
     // QUERY FIELDS END
 
     // CONSTRUCTORS
@@ -97,6 +98,50 @@ public class TestSession {
                 Test test = Test.retrieveTestOnID(newTestID);
 
                 TestSession testSession = new TestSession(newSessionID, test, user, newTestDate, allResults);
+
+                testSessions.add(testSession);
+            }
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return testSessions;
+    }
+
+    public static ArrayList<TestSession> retrieveAllTestSessions(ArrayList<UserAccount> users, ArrayList<Test> tests) {
+//        int userID = user.getMyUserID();
+        ArrayList<TestSession> testSessions = new ArrayList<>();
+
+        Database database = new Database();
+
+        ResultSet testSessionsResultSet = database.execute(GET_ALL_TEST_SESSIONS);
+
+        try {
+            ArrayList<Result> allResults = Result.retrieveAllResults();
+
+            while (testSessionsResultSet.next()) {
+                int newSessionID = testSessionsResultSet.getInt("SessionID");
+                int newTestID = testSessionsResultSet.getInt("TestID");
+                int newUserID = testSessionsResultSet.getInt("UserID");
+                Date newTestDate = testSessionsResultSet.getDate("TestDate");
+
+                Test newTest = null;
+                for(Test test : tests) {
+                    if (test.getMyTestID() == newTestID) {
+                        newTest = test;
+                        break;
+                    }
+                }
+
+                UserAccount newUser = null;
+                for (UserAccount user : users) {
+                    if (user.getMyUserID() == newUserID) {
+                        newUser = user;
+                    }
+                }
+
+                TestSession testSession = new TestSession(newSessionID, newTest, newUser, newTestDate, allResults);
 
                 testSessions.add(testSession);
             }
