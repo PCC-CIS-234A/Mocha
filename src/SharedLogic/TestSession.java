@@ -114,7 +114,6 @@ public class TestSession {
     }
 
     public static ArrayList<TestSession> retrieveAllTestSessions(ArrayList<UserAccount> users, ArrayList<Test> tests) {
-//        int userID = user.getMyUserID();
         ArrayList<TestSession> testSessions = new ArrayList<>();
 
         Database database = new Database();
@@ -131,7 +130,7 @@ public class TestSession {
                 Date newTestDate = testSessionsResultSet.getDate("TestDate");
 
                 Test newTest = null;
-                for(Test test : tests) {
+                for (Test test : tests) {
                     if (test.getMyTestID() == newTestID) {
                         newTest = test;
                         break;
@@ -149,12 +148,13 @@ public class TestSession {
 
                 testSessions.add(testSession);
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
         return testSessions;
+    }
+
     /**
      * Retrieves the taken tests from the database
      *

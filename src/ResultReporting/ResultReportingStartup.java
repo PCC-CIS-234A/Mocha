@@ -19,7 +19,8 @@ public class ResultReportingStartup {
      */
     public static void createAndShowGui() {
         JFrame frame = new JFrame("Result Scores");
-        ResultScoresForm resultScoresForm = new ResultScoresForm();
+        ResultScoresForm resultScoresForm = new ResultScoresForm(frame);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         frame.getContentPane().add(resultScoresForm.getResultScoresPanel());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

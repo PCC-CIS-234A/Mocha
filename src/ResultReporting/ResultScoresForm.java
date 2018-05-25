@@ -1,6 +1,7 @@
 package ResultReporting;
 
 import SharedLogic.*;
+import UserLogin.Main;
 
 import javax.print.DocFlavor;
 import javax.swing.*;
@@ -31,9 +32,11 @@ public class ResultScoresForm {
     private Vector<String> testListVector;
     private DefaultTableModel resultsTableModel;
     private Data data;
+    private JFrame frame;
 
-    public ResultScoresForm() {
+    public ResultScoresForm(JFrame frame) {
         resultScoresPanel.setPreferredSize(new Dimension(600, 400));
+        this.frame = frame;
 
         //dimensions for sprint 2
         //resultScoresPanel.setPreferredSize(new Dimension(800,400));
@@ -100,7 +103,8 @@ public class ResultScoresForm {
         finishButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.exit(0);
+                frame.dispose();
+                Main.createGUI();
             }
         });
     }
@@ -169,7 +173,7 @@ public class ResultScoresForm {
                 }
             }
             else {
-                JOptionPane.showMessageDialog(null, selectedUser.getMyUserName() + " has not taken this reportingItems");
+                JOptionPane.showMessageDialog(null, selectedUser.getMyUserName() + " has taken this test, but the results weren't stored.");
             }
         }
 
