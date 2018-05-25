@@ -19,6 +19,7 @@ public class TestSession {
     private UserAccount myUser;
     private Date myTestDate;
     private ArrayList<Result> myResults;
+    private int myTestID;
 
     // QUERY FIELDS
     private static final String GET_TEST_SESSION_ON_USER = "SELECT * FROM TESTSESSION WHERE UserID = ";
@@ -48,6 +49,9 @@ public class TestSession {
         });
 
 //        this.myResults = Result.retrieveTestSessionResults(sessionID);
+    }
+    public TestSession(int testID) {
+        this.myTestID = testID;
     }
     // CONSTRUCTORS END
 
@@ -151,6 +155,29 @@ public class TestSession {
         }
 
         return testSessions;
+    /**
+     * Retrieves the taken tests from the database
+     *
+     * Added by Rebecca Kennedy on 2/24/18 (2:02 am)
+     * @return
+     */
+    public static ArrayList<TestSession> retrieveTakenTests() {
+        ArrayList<TestSession> ts = new ArrayList<>();
+
+        Database database = new Database();
+        String query = "SELECT TESTSESSION.TestID\n" +
+                "FROM TESTSESSION;";
+        try {
+            ResultSet rs = database.execute(query);
+            while(rs.next()) {
+                TestSession t = new TestSession(rs.getInt("TestID"));
+                ts.add(t);
+            }
+            return ts;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     //DATABASE METHODS END
 
@@ -194,6 +221,10 @@ public class TestSession {
 
     public void setMyUser(UserAccount myUser) {
         this.myUser = myUser;
+    }
+
+    public int getMyTestID() {
+        return myTestID;
     }
     // GETTERS / SETTERS END
 

@@ -3,6 +3,7 @@ package SharedLogic;
 import Database.Database;
 import org.omg.CORBA.PUBLIC_MEMBER;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,6 +30,11 @@ public class Item {
     // CONSTRUCTORS
     public Item(int itemID, int testID, String name) {
         this.myItemID = itemID;
+        this.myTestID = testID;
+        this.myName = name;
+    }
+
+    public Item(int testID, String name) {
         this.myTestID = testID;
         this.myName = name;
     }
@@ -182,6 +188,40 @@ public class Item {
         return items;
     }
 
+
+    /**
+     * Retrieves all Items from the database with the testID and returns them in an ArrayList
+     *
+     * Added by Rebecca Kennedy 5/23/18
+     *
+     * @param testID the TestID to search for in the database
+     * @return an ArrayList of Items on a Test
+     */
+    public static ArrayList<AdminSetup.AdminSetupItem> retrieveItemsOnTestAsAdminSetupItem(int testID) {
+        ArrayList<AdminSetup.AdminSetupItem> items = new ArrayList<>();
+
+        Database database = new Database();
+
+        ResultSet itemsResultSet = database.execute(GET_ITEMS_ON_TEST + testID);
+        try {
+            while (itemsResultSet.next()) {
+                int newItemID = itemsResultSet.getInt("ItemID");
+                int newTestID = itemsResultSet.getInt("TestID");
+                String newName = itemsResultSet.getString("Name");
+
+                AdminSetup.AdminSetupItem item = new AdminSetup.AdminSetupItem(newItemID, newTestID, newName);
+
+                items.add(item);
+            }
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return items;
+    }
+
+
     /**
      * Inserts an Item into the database
      * @param item the Item to insert
@@ -193,6 +233,38 @@ public class Item {
 
         database.execute(query);
     }
+
+    /**
+     * Inserts the items for a particular test.
+     *
+     * Moved over from Rebecca Kennedy's story on 5/23/18
+     */
+    public static boolean insertItems(ArrayList<AdminSetup.AdminSetupItem> items) {
+
+        Database database = new Database();
+
+        String query = "INSERT INTO ITEM (TestID, Name)\n" +
+                "VALUES (?, ?);";
+
+        return database.executeItemsBatch(query, items);
+    }
+
+    /**
+     * Deletes particular items of a particular test.
+     *
+     * Migrated over from Rebecca Kennedy's story on 5/23/18
+     */
+    public static boolean deleteItems(ArrayList<AdminSetup.AdminSetupItem> items) {
+
+        Database database = new Database();
+
+        String query = "DELETE FROM ITEM\n" +
+                "WHERE ITEM.TestID = ?\n" +
+                "AND ITEM.Name = ?;";
+
+        return database.executeItemsBatch(query, items);
+    }
+
     // DATABASE METHODS END
 
     // GETTERS / SETTERS
@@ -221,6 +293,24 @@ public class Item {
      */
     public int getMyTestID() {
         return myTestID;
+    }
+
+    /**
+     * Sets the TestID
+     *
+     * Migrated from Rebecca Kennedy's code on 5/23/18
+     */
+    public void setTestID(int testID) {
+        myTestID = testID;
+    }
+
+    /**
+     * Sets the name
+     *
+     * Migrated from Rebecca Kennedy's code on 5/23/18
+     */
+    public void setName(String name) {
+        myName = name;
     }
 
     /**

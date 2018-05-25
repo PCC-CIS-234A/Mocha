@@ -20,8 +20,9 @@ public class Test {
     // QUERY FIELDS
     private static final String INSERT_TEST = "INSERT INTO TEST (Name) VALUES('";
     private static final String GET_ALL_TESTS = "SELECT * FROM TEST";
-    private static final String GET_TESTS_FROM_NAME = "SELECT * FROM TEST WHERE Name = ";
+    private static final String GET_TESTS_FROM_NAME = "SELECT * FROM TEST WHERE TEST.Name = ";
     private static final String GET_TEST_FROM_ID = "SELECT * FROM TEST WHERE TestID = ";
+    private static final String GET_TEST_ID_FROM_NAME = "SELECT TestID FROM TEST WHERE TEST.Name = ";
     // QUERY FIELDS END
 
 
@@ -34,6 +35,9 @@ public class Test {
         this.myItems = items;
         this.myName = name;
         this.myTestID = testID;
+    }
+    public Test(String name) {
+        this.myName = name;
     }
     // CONSTRUCTORS END
 
@@ -57,6 +61,22 @@ public class Test {
     }
 
     /**
+     * Inserts a test
+     *
+     * Note: this was migrated from Rebecca's code.
+     * @param test
+     */
+    public static boolean insertTest(AdminSetup.AdminSetupTest test) {
+        Database database = new Database();
+
+        //insert test
+        String query = INSERT_TEST + test.getMyName() + "');";
+        return database.executeAnUpdate(query);
+    }
+
+    /**
+     * Retrieves all the tests from the database
+     *
      * Note: this method was migrated from Rebecca's(?) code. It used to be called "getTests()"
      * @return
      */
@@ -116,18 +136,60 @@ public class Test {
     }
 
     /**
+     * Retrieves all the tests from the database
+     *
+     * Note: this method was migrated from Rebecca's(?) code. It used to be called "getTests()"
+     * @return
+     */
+    public static ArrayList<AdminSetup.AdminSetupTest> retrieveAllTestsAsAdminSetupTest() {
+        ArrayList<AdminSetup.AdminSetupTest> tests = new ArrayList<>();
+
+        Database database = new Database();
+
+        try {
+            ResultSet testsResultSet = database.execute(GET_ALL_TESTS);
+
+            while (testsResultSet.next()) {
+       //         AdminSetup.AdminSetupTest t = new AdminSetup.AdminSetupTest(testsResultSet.getString("Name"));
+
+                String name = testsResultSet.getString("Name");
+
+                AdminSetup.AdminSetupTest test = new AdminSetup.AdminSetupTest(name);
+
+                tests.add(test);
+
+                test.setMyTestID(testsResultSet.getInt("TestID"));
+
+                /*
+                String name = testsResultSet.getString("Name");
+
+                AdminSetup.AdminSetupTest test = new AdminSetup.AdminSetupTest(name);
+
+                tests.add(test);
+                */
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return tests;
+    }
+
+    /**
      * Note: this was migrated from Rebecca's code. It should be migrated to an inherited class. Please don't use
      *          the method unless you're Rebecca.
      * @param name
      * @return
      */
-    public ArrayList<Test> getTestWithName(String name) {
+    public static ArrayList<Test> getTestWithName(String name) {
         ArrayList<Test> tests = new ArrayList<>();
 
         Database database = new Database();
 
         try {
-            ResultSet testsResultSet = database.execute(GET_TESTS_FROM_NAME + name);
+         //   ResultSet testsResultSet = database.execute(GET_TESTS_FROM_NAME + name);
+            ResultSet testsResultSet = database.execute(GET_TESTS_FROM_NAME + "'" + name + "'");
 
             while (testsResultSet.next()) {
                 int testID = testsResultSet.getInt("TestID");
@@ -143,6 +205,30 @@ public class Test {
         }
 
         return tests;
+    }
+
+    /**
+     * Note: this was migrated from Rebecca's code. It should be migrated to an inherited class. Please don't use
+     *          the method unless you're Rebecca.
+     * @param name
+     * @return
+     */
+    public static int retrieveTestID(String name) {
+        int id;
+        Database database = new Database();
+
+        try {
+            ResultSet testsResultSet = database.execute(GET_TEST_ID_FROM_NAME + "'" + name + "'");
+
+            if (testsResultSet.next()) {
+                id = testsResultSet.getInt("TestID");
+                return id;
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     public static Test retrieveTestOnName(String name) {
@@ -210,6 +296,10 @@ public class Test {
 
     public int getMyTestID() {
         return myTestID;
+    }
+
+    public void setMyTestID(int myTestID) {
+        this.myTestID = myTestID;
     }
     // GETTERS / SETTERS END
 }
