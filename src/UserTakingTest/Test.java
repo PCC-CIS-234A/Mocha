@@ -1,5 +1,6 @@
 package UserTakingTest;
 
+import Database.Database;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +19,10 @@ public class Test
     private int collectionID;
     private ArrayList<Item> mCollection;
     private ArrayList<ItemPair> testQuestions;
-    private MochaDB db;
+    private Database db;
 
     public Test(int userID, int collectionID) {
-        db = new MochaDB();
+        db = new Database();
         this.userID = userID;
         this.collectionID = collectionID;
         testID = 1;

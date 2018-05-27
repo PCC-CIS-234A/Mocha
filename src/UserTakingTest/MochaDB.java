@@ -1,5 +1,6 @@
 package UserTakingTest;
 
+import Database.Database;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,15 +12,20 @@ import java.util.List;
  */
 public class MochaDB {
     //access database
-    private static final String MOCHA_DB = "234a_Mocha";
+/*    private static final String MOCHA_DB = "234a_Mocha";
     private static final String SERVER = "cisdbss.pcc.edu";
     private static final String USERNAME = "234a_Mocha"; //?is this the user taking test?
     private static final String PASSWORD = "@#$Mocha";
     private static final String CONNECTION_STRING = "jdbc:jtds:sqlserver://"
             + SERVER + "/" + MOCHA_DB + ";user=" + USERNAME + ";password=" + PASSWORD;
-    private Connection mConnection = null;
-    private static final String USER_ROLE = "user";
+    private static final String USER_ROLE = "user";*/
 
+    private Database db;
+    private Connection mConnection = null;
+
+    public MochaDB() { db = new Database(); }
+
+/*
     private void connect() {
         if (mConnection != null)
             return;
@@ -30,6 +36,7 @@ public class MochaDB {
             e.printStackTrace();
         }
     }
+*/
 
     /**
      * Read in a list of items from a specific collection
@@ -38,7 +45,9 @@ public class MochaDB {
      */
     public ArrayList<Item> readItems(int collectionID) {
         ArrayList<Item> items = new ArrayList<>();
-        connect();
+        Database db = new Database();
+        db.connect();
+       // connect();
         String query = "SELECT ItemID, TestID, Name from ITEM WHERE TestID = ?";
         try {
 
@@ -53,6 +62,8 @@ public class MochaDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        //close();
+        db.close();
         return null;
     }
 
@@ -62,7 +73,8 @@ public class MochaDB {
      * @return TestSession
      */
     public TestSession assignSessionID(int testID, int userID) {
-        connect();
+        //connect();
+        db.connect();
        // String query = "INSERT INTO TESTSESSION (TestID, UserID) VALUES (?, ?);";
         String query = "INSERT INTO TESTSESSION (TestID, UserID, TestDate) VALUES (?, ?, GETDATE()); SELECT SCOPE_IDENTITY() AS SessionID;";
         try {
@@ -76,6 +88,8 @@ public class MochaDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        //close();
+        db.close();
         return null;
     }
 
@@ -87,7 +101,8 @@ public class MochaDB {
      * @param winCode integer win code (0=tie 1=item1 2=item2)
      */
     public void insertResult(int sessionID, int item1ID, int item2ID, int winCode) {
-        connect();
+        //connect();
+        db.connect();
         String query = "INSERT INTO RESULT (SessionID, Item1, Item2, ResultCode) VALUES (?, ?, ?, ?)";
 
         try {
@@ -100,6 +115,8 @@ public class MochaDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        //close();
+        db.close();
     }
 
     /**
@@ -109,7 +126,8 @@ public class MochaDB {
      */
 
     public void saveResults(int sessionID, ArrayList<ItemPair> testResults) {
-        connect();
+        //connect();
+        db.connect();
         //for each ItemPair result in the arraylist
         for (ItemPair result : testResults) {
 
@@ -120,6 +138,8 @@ public class MochaDB {
                     result.getWinItem()
             );
         }
+        //close();
+        db.close();
     }
 
     public void close() {

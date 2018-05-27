@@ -54,6 +54,7 @@ public class GUI
                 winItem = getSelectedButton(radioGroup);
                 System.out.println(winItem);
                 mTestQuestions.get(position).setWinItem(winItem);
+                nextQuestion();
             }
         };
 
