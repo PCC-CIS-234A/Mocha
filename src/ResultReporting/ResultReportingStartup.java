@@ -6,7 +6,7 @@ import javax.swing.*;
  * Creates the ResultReporting GUI when main() is called
  *
  * @author  Bobby Puckett
- * @version 5.8.2018
+ * @version 5.29.2018
  */
 public class ResultReportingStartup {
 

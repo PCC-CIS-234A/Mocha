@@ -213,17 +213,3 @@ public class UserAccount {
         return getMyUserName();
     }
 }
-
-/*
- * NOTES:
- *
- * Kim -    I added the getMyUser() and insertUser()
- *          method for you, so you shouldn't have to do anything except change the package
- *          and call the method from UserAccount like -
- *
- *          UserAccount.retrieveUserOnEmailPassword(email, password);
- *          UserAccount.insertUser(user);
- *
- *          (the getMyUser() method I renamed to retrieveUserOnEmailPassword to follow the naming
- *          for the other classes of "retrieve + <Object> + On + <Fields>")
- */

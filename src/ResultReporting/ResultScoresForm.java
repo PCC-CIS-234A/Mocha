@@ -1,35 +1,31 @@
 package ResultReporting;
 
-import SharedLogic.*;
+import SharedLogic.Result;
+import SharedLogic.TestSession;
+import SharedLogic.UserAccount;
 import UserLogin.Main;
 
-import javax.print.DocFlavor;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Vector;
 
 /**
  * @author Bobby Puckett
- * @version 5/8/2018
- *
+ * @version 5/29/2018
+ * <p>
  * Description: Provides a way to communicate with the ResultScores GUI
  */
 public class ResultScoresForm {
     private JPanel resultScoresPanel;
-    private JPanel testPanel;
-    private JList<String> testList;
-    private JLabel testLabel;
     private JPanel resultsPanel;
     private JLabel resultsLabel;
     private JTable resultsTable;
     private JButton finishButton;
     private JComboBox userComboBox;
+    private JComboBox testComboBox;
 
-    private Vector<String> testListVector;
     private DefaultTableModel resultsTableModel;
     private Data data;
     private JFrame frame;
@@ -38,25 +34,12 @@ public class ResultScoresForm {
         resultScoresPanel.setPreferredSize(new Dimension(600, 400));
         this.frame = frame;
 
-        //dimensions for sprint 2
-        //resultScoresPanel.setPreferredSize(new Dimension(800,400));
         data = new Data();
 
-        initializeTestList();
         initializeResultsTable();
         initializeUserComboBox();
+        initializeTestComboBox();
         initializeFinishButton();
-    }
-
-    /**
-     * Keeps the constructor short by initializing the testList
-     */
-    private void initializeTestList() {
-        testListVector = new Vector<>();
-        testList.setListData(testListVector);
-
-        //disabling test pannel for first sprint
-        testPanel.setVisible(false);
     }
 
     /**
@@ -90,32 +73,31 @@ public class ResultScoresForm {
         }
 
         userComboBox.addActionListener(e -> {
-            repopulateResultTable((UserAccount) userComboBox.getSelectedItem());
+            repopulateTestComboBox((UserAccount) userComboBox.getSelectedItem());
         });
+    }
 
-        repopulateResultTable((UserAccount) userComboBox.getSelectedItem());
+    /**
+     * Keeps the constructor short by initializing the testComboBox.
+     * <p>
+     * Suppressing the unchecked warning because I'm using a non-primitive data type
+     * and adding it to the ComboBox
+     */
+    @SuppressWarnings("unchecked")
+    private void initializeTestComboBox() {
+        testComboBox.addActionListener(e -> repopulateResultTable((TestSession) testComboBox.getSelectedItem()));
+
+        repopulateTestComboBox((UserAccount) userComboBox.getSelectedItem());
     }
 
     /**
      * Keeps the constructor short by initializing the finishButton
      */
     private void initializeFinishButton() {
-        finishButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                Main.createGUI();
-            }
+        finishButton.addActionListener(e -> {
+            frame.dispose();
+            Main.createGUI();
         });
-    }
-
-    /**
-     * Adds a test to the testList
-     *
-     * @param test the test object to be added
-     */
-    public void addTest(Test test) {
-        testListVector.add(test.getMyName());
     }
 
     /**
@@ -123,7 +105,7 @@ public class ResultScoresForm {
      *
      * @param reportingItem the reportingItem to be added
      */
-    public void addReportingItem(ReportingItem reportingItem) {
+    private void addReportingItem(ReportingItem reportingItem) {
         Vector<String> rowData = new Vector<>();
 
         rowData.add(String.valueOf(reportingItem.getScore()));
@@ -138,29 +120,21 @@ public class ResultScoresForm {
     /**
      * Deletes and reinstanciates the ResultTable
      *
-     * @param selectedUser the user to get tests to repopulate the table from
+     * @param testSession the testSession to fill the result table with
      */
-    private void repopulateResultTable(UserAccount selectedUser) {
+    private void repopulateResultTable(TestSession testSession) {
+        UserAccount selectedUser = (UserAccount) userComboBox.getSelectedItem();
         int rowCount = resultsTableModel.getRowCount();
         for (int i = 0; i < rowCount; i++) {
             resultsTableModel.removeRow(0);
         }
-        ArrayList<TestSession> userTestSessions = new ArrayList<>();
 
-        data.getTestSessions().forEach(testSession -> {
-            if (testSession.getMyUser().getMyUserName().equals(selectedUser.getMyUserName())) {
-                userTestSessions.add(testSession);
-            }
-        });
-
-        TestSession testSession;
-
-        if (userTestSessions.size() > 0) {
-            testSession = userTestSessions.get(0);
-            ArrayList<Result> results = new ArrayList<>();
+        ArrayList<Result> results = new ArrayList<>();
+        if (testSession != null) {
+            int id = testSession.getMySessionID();
 
             data.getResults().forEach(dataResult -> {
-                if (dataResult.getMySessionID() == testSession.getMySessionID()) {
+                if (dataResult.getMySessionID() == id) {
                     results.add(dataResult);
                 }
             });
@@ -171,19 +145,28 @@ public class ResultScoresForm {
                 for (ReportingItem i : reportingItems) {
                     addReportingItem(i);
                 }
-            }
-            else {
+            } else {
                 JOptionPane.showMessageDialog(null, selectedUser.getMyUserName() + " has taken this test, but the results weren't stored.");
             }
         }
+    }
 
-        else {
-            if (selectedUser != null) {
-                JOptionPane.showMessageDialog(null, selectedUser.getMyUserName() + " has not taken any tests");
+    /**
+     * Deletes and reinstanciates the testComboBox
+     *
+     * @param user specifies which tests will be displayed
+     */
+    private void repopulateTestComboBox(UserAccount user) {
+        testComboBox.removeAllItems();
+
+        data.getTestSessions().forEach(testSession -> {
+            if (testSession.getMyUser().getMyUserID() == user.getMyUserID()) {
+                testComboBox.addItem(testSession);
             }
-            else {
-                JOptionPane.showMessageDialog(null, "user has not taken any tests");
-            }
+        });
+
+        if (testComboBox.getItemCount() == 0) {
+            JOptionPane.showMessageDialog(null, user.getMyUserName() + " has not taken any tests.");
         }
     }
 

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 /**
  * @author Bobby Puckett
- * @version 5/23/2018
+ * @version 5/29/2018
  *
  * Description: Makes all data from the database available
  */
@@ -83,5 +83,4 @@ public class Data {
         users.forEach(System.out::println);
         testSessions.forEach(System.out::println);
     }
-
 }

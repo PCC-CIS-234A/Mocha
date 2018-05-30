@@ -303,10 +303,3 @@ public class Test {
     }
     // GETTERS / SETTERS END
 }
-
-/*
- * NOTES:
- *
- * Rebecca - Should getTestWithName return and Array or a Test?
- *
- */

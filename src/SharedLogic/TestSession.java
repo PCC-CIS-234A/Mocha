@@ -234,25 +234,3 @@ public class TestSession {
         return String.valueOf(getMySessionID());
     }
 }
-
-
-/*
- * NOTES:
- *
- * Liz -    below is a method from Test.java which I thought you might want somewhere, but it didn't seem to fit with this
- *          class. I've translated it for you :)
- */
-//    public ArrayList<Result> makeTestQuestions (ArrayList<String> items) {
-//        testQuestions = new ArrayList<Result>();
-//        //for each item in the ArrayList of items, create a pairing with all subsequent items
-//        for (String item : items) {
-//            //declare & create a temp arraylist of subsequent item names
-//            ArrayList<String> temp = new ArrayList<>();
-//            temp.addAll(items.indexOf(item+1), items);
-//            for (String tempItem : temp) {
-//                Result question = new Result(item, tempItem, mySessionID);
-//                testQuestions.add(question);
-//            }
-//        }
-//        return testQuestions;
-//    }

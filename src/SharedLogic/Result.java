@@ -166,8 +166,6 @@ public class Result {
         ResultSet resultResultSet = database.execute(GET_ALL_RESULTS);
 
         try {
-//            ArrayList<Item> allItems = Item.retrieveAllItems();
-
             while (resultResultSet.next()) {
                 int newItemOneID = resultResultSet.getInt("Item1");
                 int newItemTwoID = resultResultSet.getInt("Item2");
@@ -349,10 +347,3 @@ public class Result {
     }
     //GETTERS / SETTERS END
 }
-
-/*
- * NOTES:
- *
- * Liz - Result class replaces your ItemPair class.
- *
- */

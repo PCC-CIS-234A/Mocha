@@ -41,7 +41,6 @@ public class Item {
     // CONSTRUCTORS END
 
     // DATABASE METHODS
-
     /**
      * returns every Item in the database
      *
@@ -338,21 +337,3 @@ public class Item {
         return getMyName();
     }
 }
-
-/*
- * NOTES:
- *
- * Liz -    In your MochaDB class, there's a readItems(int collectionID) method which returns a list of strings.
- *          I've included this in this class, so that you don't have to migrate over.
- *
- *          (from next day) I believe the String array from readItems is passed to a combobox or similar widget. You
- *          might consider whether you want to pass the Item object itself. Because of the overridden toString() method,
- *          the widget will be able to read the names from the Item without you doing extra work. It also helps when you
- *          need to do something with the widget. Instead of saying something like "find Item where myName is the widget
- *          myName," you can pass the currently selected Item stored in the widget. The way you'd do this is -
- *
- *              nameOfComboBox.add(Item);
- *
- *          Where "Item" is the item you want to pass. Either method is a fine way of doing things. Choose what you feel
- *          better about :)
- */
