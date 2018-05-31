@@ -8,11 +8,13 @@ import UserLogin.Main;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Vector;
 
 /**
- * @author Bobby Puckett
+ * @author Bobby Puckett and Rebecca Kennedy (RK made small changes)
  * @version 5/29/2018
  * <p>
  * Description: Provides a way to communicate with the ResultScores GUI
@@ -25,13 +27,17 @@ public class ResultScoresForm {
     private JButton finishButton;
     private JComboBox userComboBox;
     private JComboBox testComboBox;
+    private JButton detailedResultsButton; //RK added 5/30/18
+    private JButton statisticsButton; //RK added 5/30/18
 
     private DefaultTableModel resultsTableModel;
     private Data data;
     private JFrame frame;
 
     public ResultScoresForm(JFrame frame) {
-        resultScoresPanel.setPreferredSize(new Dimension(600, 400));
+        /* RK edit 5/30/18 Changed width to 700. Kept Bobby's original line and have new line. */
+      //  resultScoresPanel.setPreferredSize(new Dimension(600, 400));
+        resultScoresPanel.setPreferredSize(new Dimension(700, 400));
         this.frame = frame;
 
         data = new Data();
@@ -40,6 +46,9 @@ public class ResultScoresForm {
         initializeUserComboBox();
         initializeTestComboBox();
         initializeFinishButton();
+        //RK edit 5/30/18 added detailedResultsButton and statisticsButton
+        initializeDetailedResultsButton();
+        initializeStatisticsButton();
     }
 
     /**
@@ -97,6 +106,44 @@ public class ResultScoresForm {
         finishButton.addActionListener(e -> {
             frame.dispose();
             Main.createGUI();
+        });
+    }
+
+    /**
+     * RK: Adding this on 5/30/18
+     *
+     * Keeps the constructor short by initializing the detailedResultsButton
+     * Sets up the ResultMatrix GUI
+     */
+    private void initializeDetailedResultsButton() {
+        detailedResultsButton.addActionListener(e -> {
+            JFrame detResFrame = new JFrame("Detailed Results");
+            ResultMatrix resultMatrix = new ResultMatrix(detResFrame, this);
+            detResFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+            detResFrame.getContentPane().add(resultMatrix.getResultMatrixPanel());
+            detResFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            detResFrame.setVisible(true);
+            detResFrame.pack();
+        });
+    }
+
+    /**
+     * RK: Adding this on 5/30/18
+     *
+     * Keeps the constructor short by initializing the statisticsButton
+     * Sets up the CumulativeStatistics GUI
+     */
+    private void initializeStatisticsButton() {
+        statisticsButton.addActionListener(e -> {
+            JFrame statFrame = new JFrame("Cumulative Statistics");
+            CumulativeStatistics cumStat = new CumulativeStatistics(statFrame);
+            statFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+            statFrame.getContentPane().add(cumStat.getcumStatPanel());
+            statFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            statFrame.setVisible(true);
+            statFrame.pack();
         });
     }
 
@@ -168,6 +215,21 @@ public class ResultScoresForm {
         if (testComboBox.getItemCount() == 0) {
             JOptionPane.showMessageDialog(null, user.getMyUserName() + " has not taken any tests.");
         }
+    }
+
+    /**
+     * RK added this method 5/30/18
+     * Getter for selected testID
+     *
+     * @return the testID
+     */
+    public int getTestID() {
+        TestSession ts = (TestSession) testComboBox.getSelectedItem();
+        int testID = 0;
+        if(ts.getMyTest() != null) {
+            testID = ts.getMyTest().getMyTestID();
+        }
+        return testID;
     }
 
     /**
