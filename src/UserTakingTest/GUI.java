@@ -42,8 +42,7 @@ public class GUI
 
     public GUI() {
         mTest = new Test(mUserID, mCollectionID);
-        mTestQuestions = mTest.makeTestQuestions();
-
+        mTestQuestions = mTest.makeRandomTestQuestions();
         rootPanel.setPreferredSize(new Dimension(300, 200));
         displayQuestion();
         ActionListener listener = new ActionListener() {

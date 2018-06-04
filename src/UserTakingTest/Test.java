@@ -2,13 +2,15 @@ package UserTakingTest;
 
 import Database.Database;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Class for User Taking Test Logic
  * @author Liz Goltz
- * @version 4/3/2018
+ * @version 6/3/2018
+ *
+ * modifications:
+ *  - added random question feature
  */
 public class Test
 {
@@ -27,24 +29,66 @@ public class Test
         this.collectionID = collectionID;
         testID = 1;
         mCollection = db.readItems(collectionID);
+        testQuestions = new ArrayList<ItemPair>();
     }
 
     /**
-     * Method to create a list of test questions of all the unique pairings from a list of items
+     * Class to make random test questions according to specifications
+     * @return testQuestions - an arraylist of ItemPairs
+     */
+    public ArrayList<ItemPair> makeRandomTestQuestions() {
+        testQuestions = new ArrayList<>();
+        ArrayList<ItemPair> tempQuestions = makeTestQuestions();
+        initializeTally();
+        while (!tempQuestions.isEmpty()) {
+           ItemPair lowest = Collections.min(tempQuestions, new Comparator<ItemPair>() {
+                @Override
+                public int compare(ItemPair o1, ItemPair o2) {
+                    return o1.getTally() - o2.getTally();
+                }
+           });
+           testQuestions.add(lowest);
+           tempQuestions.remove(lowest);
+           incrementTally(lowest.getItem1());
+           incrementTally(lowest.getItem2());
+        }
+        return testQuestions;
+    }
+
+    void initializeTally() {
+        for (Item item : mCollection) {
+            item.setTally(0);
+        }
+    }
+
+    void incrementTally(Item item) {
+      item.setTally(item.getTally() + 1);
+    }
+
+    /**
+     * Method to create a randomized list of test questions of all the unique pairings from a list of items
      * @return testQuestions a list of item pairs /test questions
      */
-    public ArrayList<ItemPair> makeTestQuestions () {
-
-        testQuestions = new ArrayList<ItemPair>();
-        //for each item in the ArrayList of items, create a pairing with all subsequent items
-
+    public ArrayList<ItemPair> makeTestQuestions() {
+        Random rand = new Random();
+        ArrayList<ItemPair> testQuestions = new ArrayList<ItemPair>();
         for (int i = 0; i < mCollection.size() - 1; i++) {
             for (int j = i+1; j < mCollection.size(); j++) {
-                System.out.println(mCollection.get(i).getName() + " " + mCollection.get(j).getName());
-                ItemPair question = new ItemPair(mCollection.get(i), mCollection.get(j));
+                int random = rand.nextInt(testQuestions.size() + 1);
+                ItemPair question = new ItemPair();
+                if (random % 2 == 0) {
+                    question.setItem1(mCollection.get(i));
+                    question.setItem2(mCollection.get(j));
+                }
+                else {
+                    question.setItem1(mCollection.get(j));
+                    question.setItem2(mCollection.get(i));
+                }
+                System.out.println(question.getItem1().getName() + " " + question.getItem2().getName());
                 testQuestions.add(question);
             }
         }
+        //Collections.shuffle(testQuestions);
         return testQuestions;
     }
 
@@ -56,7 +100,7 @@ public class Test
     public ArrayList<ItemPair> getTestQuestions() { return testQuestions; }
 
     public void setTestQuestions(ArrayList<String> mCollection) {
-        this.testQuestions = makeTestQuestions();
+        this.testQuestions = makeRandomTestQuestions();
     }
 
     public int getSessionID() {

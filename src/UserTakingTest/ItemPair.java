@@ -3,12 +3,18 @@ package UserTakingTest;
 /**
  * Class to hold an Item pairing and win code
  * @author Liz Goltz
- * @version 4/3/2018
+ * @version 6/3/2018
+ *
+ * modifications:
+ * - added method to get combined tally of items
  */
 public class ItemPair {
     private Item item1;
     private Item item2;
     private int winItem;
+
+    public ItemPair() {
+    }
 
     public ItemPair(Item item1, Item item2) {
         this.item1 = item1;
@@ -39,4 +45,10 @@ public class ItemPair {
     public void setWinItem(int winItem) {
         this.winItem = winItem;
     }
+
+    public int getTally() {
+        return (item1.getTally() + item2.getTally());
+    }
+
+
 }
