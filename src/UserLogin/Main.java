@@ -1,8 +1,12 @@
 package UserLogin;
 
+
+import AdminSetup.SetupTest;
+import Database.UserAccountDB;
+import ResultReporting.ResultReportingStartup;
 import UserLogin.Forms.LoginForm;
 import UserLogin.Forms.RegisterForm;
-import UserLogin.Objects.UserAccount;
+import SharedLogic.UserAccount;
 
 import javax.swing.*;
 
@@ -10,11 +14,10 @@ import static javax.swing.SwingUtilities.invokeLater;
 
 /**
  * @author Anh Nguyen
- * @version 4/25/2018
+ * @version 6/6/2018
  * Description: This is the controller class for UserLogin GUIs
  * This class is also control what a user can do based on their role
  * (user can take tests/admin can set up a test/ therapist can view the report)
- * For sprint 1: only show different messages for different roles
  */
 
 
@@ -59,8 +62,8 @@ public class Main {
     public static void login() {
      //check Email and Password
 
-        DB db = new DB();
-        UserAccount user = db.getUser(myEmail,myPassword);
+        UserAccountDB userAccountDb = new UserAccountDB();
+        UserAccount user = userAccountDb.getUser(myEmail,myPassword);
 
     // If user's login is failed , error message will pop up
         if(user == null) {
@@ -68,21 +71,21 @@ public class Main {
             return;
         }
         String role = user.getMyRole();
-    // If user's login is successful, different roles will assigned different messages
+        myFrame.dispose();
+
         if(role.equals("user")) {
             // redirect to User page
-            JOptionPane.showMessageDialog(null, "User Taking Test Page");
+            UserTakingTest.Main.createGUI();
             return;
         }
         if(role.equals("admin")) {
             // redirect to admin page
-           JOptionPane.showMessageDialog(null, "Show Admin Setup Page");
-          //  new SetupTest();
+            new SetupTest();
             return;
         }
         if(role.equals("therapist")) {
             // redirect to therapist page
-            JOptionPane.showMessageDialog(null, "Show Report Page");
+            SwingUtilities.invokeLater(ResultReportingStartup::createAndShowGui);
             return;
         }
         }
