@@ -33,6 +33,8 @@ public class ResultScoresForm {
     private DefaultTableModel resultsTableModel;
     private Data data;
     private JFrame frame;
+    private ArrayList<ReportingItem> reportingItems; // RK added 5/31/18
+    private ArrayList<Result> results; // RK added 5/31/18
 
     public ResultScoresForm(JFrame frame) {
         /* RK edit 5/30/18 Changed width to 700. Kept Bobby's original line and have new line. */
@@ -116,6 +118,7 @@ public class ResultScoresForm {
      * Sets up the ResultMatrix GUI
      */
     private void initializeDetailedResultsButton() {
+
         detailedResultsButton.addActionListener(e -> {
             JFrame detResFrame = new JFrame("Detailed Results");
             ResultMatrix resultMatrix = new ResultMatrix(detResFrame, this);
@@ -176,7 +179,9 @@ public class ResultScoresForm {
             resultsTableModel.removeRow(0);
         }
 
-        ArrayList<Result> results = new ArrayList<>();
+        /* RK modified 5/31/18. Kept both lines. Changed results to be a private field instead of a local variable */
+      //  ArrayList<Result> results = new ArrayList<>();
+        results = new ArrayList<>();
         if (testSession != null) {
             int id = testSession.getMySessionID();
 
@@ -186,7 +191,9 @@ public class ResultScoresForm {
                 }
             });
 
-            ArrayList<ReportingItem> reportingItems = ReportingItem.buildReportingItems(results);
+            /* RK modified 5/31/18. Kept both lines. Changed reportingItems to be a private field instead of a local variable */
+         //   ArrayList<ReportingItem> reportingItems = ReportingItem.buildReportingItems(results);
+            reportingItems = ReportingItem.buildReportingItems(results);
 
             if (reportingItems.size() > 0) {
                 for (ReportingItem i : reportingItems) {
@@ -214,22 +221,56 @@ public class ResultScoresForm {
 
         if (testComboBox.getItemCount() == 0) {
             JOptionPane.showMessageDialog(null, user.getMyUserName() + " has not taken any tests.");
+            enableDetailedResultsButton(0); //  5/31/18 RK added call to enableDetailedResultsButton()
+        } else {  //  5/31/18 RK added else part of if statement
+            enableDetailedResultsButton(1);
         }
     }
 
     /**
-     * RK added this method 5/30/18
-     * Getter for selected testID
+     * RK added this method 5/31/18
+     * Getter for selected TestSession
      *
-     * @return the testID
+     * @return the ts
      */
-    public int getTestID() {
+    public TestSession getTestSession() {
         TestSession ts = (TestSession) testComboBox.getSelectedItem();
-        int testID = 0;
-        if(ts.getMyTest() != null) {
-            testID = ts.getMyTest().getMyTestID();
+        return ts;
+    }
+
+    /**
+     * RK added this method 5/31/18
+     * Getter for selected TestSession
+     *
+     * @return the ts
+     */
+    public ArrayList<ReportingItem> getReportingItems() {
+        return reportingItems;
+    }
+
+    /**
+     * RK added this method 5/31/18
+     * Getter for results
+     *
+     * @return the results
+     */
+    public ArrayList<Result> getResults() {
+        return results;
+    }
+
+    /**
+     * 5/31/18 Rebecca Kennedy added this method
+     *
+     * Enables or disables the detailedResultsButton
+     * @param i
+     */
+    public void enableDetailedResultsButton(int i) {
+        if(i == 0) {
+            detailedResultsButton.setEnabled(false);
+        } else if (i == 1) {
+            detailedResultsButton.setEnabled(true);
         }
-        return testID;
+
     }
 
     /**
