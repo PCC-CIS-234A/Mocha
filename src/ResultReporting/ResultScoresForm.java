@@ -140,7 +140,7 @@ public class ResultScoresForm {
     private void initializeStatisticsButton() {
         statisticsButton.addActionListener(e -> {
             JFrame statFrame = new JFrame("Cumulative Statistics");
-            CumulativeStatistics cumStat = new CumulativeStatistics(statFrame);
+            CumulativeStatistics cumStat = new CumulativeStatistics(statFrame, this);
             statFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
             statFrame.getContentPane().add(cumStat.getcumStatPanel());
