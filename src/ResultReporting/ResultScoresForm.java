@@ -1,8 +1,6 @@
 package ResultReporting;
 
-import SharedLogic.Result;
-import SharedLogic.TestSession;
-import SharedLogic.UserAccount;
+import SharedLogic.*;
 import UserLogin.Main;
 
 import javax.swing.*;
@@ -27,14 +25,14 @@ public class ResultScoresForm {
     private JComboBox testComboBox;
 
     private DefaultTableModel resultsTableModel;
-    private Data data;
+    private ResultReportingDatabase resultReportingDatabase;
     private JFrame frame;
 
     public ResultScoresForm(JFrame frame) {
         resultScoresPanel.setPreferredSize(new Dimension(600, 400));
         this.frame = frame;
 
-        data = new Data();
+        resultReportingDatabase = new ResultReportingDatabase();
 
         initializeResultsTable();
         initializeUserComboBox();
@@ -60,27 +58,29 @@ public class ResultScoresForm {
     /**
      * Keeps the constructor short by initializing the userComboBox.
      * <p>
-     * Suppressing the unchecked warning because I'm using a non-primitive data type
+     * Suppressing the unchecked warning because I'm using a non-primitive resultReportingDatabase type
      * and adding it to the ComboBox
      */
     @SuppressWarnings("unchecked")
     private void initializeUserComboBox() {
-
-        for (UserAccount u : data.getUsers()) {
+        for (UserAccount u : resultReportingDatabase.getUsers()) {
             if (u.getMyRole().equals("user")) {
-                userComboBox.addItem(u);
+                for (TestSession session : resultReportingDatabase.getTestSessions()) {
+                    if (session.getMyUser().getMyUserID() == u.getMyUserID()) {
+                        userComboBox.addItem(u);
+                        break;
+                    }
+                }
             }
         }
 
-        userComboBox.addActionListener(e -> {
-            repopulateTestComboBox((UserAccount) userComboBox.getSelectedItem());
-        });
+        userComboBox.addActionListener(e -> repopulateTestComboBox((UserAccount) userComboBox.getSelectedItem()));
     }
 
     /**
      * Keeps the constructor short by initializing the testComboBox.
      * <p>
-     * Suppressing the unchecked warning because I'm using a non-primitive data type
+     * Suppressing the unchecked warning because I'm using a non-primitive resultReportingDatabase type
      * and adding it to the ComboBox
      */
     @SuppressWarnings("unchecked")
@@ -103,16 +103,16 @@ public class ResultScoresForm {
     /**
      * Adds a row to the resultsTable
      *
-     * @param reportingItem the reportingItem to be added
+     * @param resultReportingItem the resultReportingItem to be added
      */
-    private void addReportingItem(ReportingItem reportingItem) {
+    private void addReportingItem(ResultReportingItem resultReportingItem) {
         Vector<String> rowData = new Vector<>();
 
-        rowData.add(String.valueOf(reportingItem.getScore()));
-        rowData.add(reportingItem.getMyName());
-        rowData.add(String.valueOf(reportingItem.getWins()));
-        rowData.add(String.valueOf(reportingItem.getLosses()));
-        rowData.add(String.valueOf(reportingItem.getTies()));
+        rowData.add(String.valueOf(resultReportingItem.getScore()));
+        rowData.add(resultReportingItem.getMyName());
+        rowData.add(String.valueOf(resultReportingItem.getWins()));
+        rowData.add(String.valueOf(resultReportingItem.getLosses()));
+        rowData.add(String.valueOf(resultReportingItem.getTies()));
 
         resultsTableModel.addRow(rowData);
     }
@@ -133,16 +133,16 @@ public class ResultScoresForm {
         if (testSession != null) {
             int id = testSession.getMySessionID();
 
-            data.getResults().forEach(dataResult -> {
+            resultReportingDatabase.getResults().forEach(dataResult -> {
                 if (dataResult.getMySessionID() == id) {
                     results.add(dataResult);
                 }
             });
 
-            ArrayList<ReportingItem> reportingItems = ReportingItem.buildReportingItems(results);
+            ArrayList<ResultReportingItem> resultReportingItems = ResultReportingItem.buildReportingItems(results);
 
-            if (reportingItems.size() > 0) {
-                for (ReportingItem i : reportingItems) {
+            if (resultReportingItems.size() > 0) {
+                for (ResultReportingItem i : resultReportingItems) {
                     addReportingItem(i);
                 }
             } else {
@@ -159,7 +159,7 @@ public class ResultScoresForm {
     private void repopulateTestComboBox(UserAccount user) {
         testComboBox.removeAllItems();
 
-        data.getTestSessions().forEach(testSession -> {
+        resultReportingDatabase.getTestSessions().forEach(testSession -> {
             if (testSession.getMyUser().getMyUserID() == user.getMyUserID()) {
                 testComboBox.addItem(testSession);
             }

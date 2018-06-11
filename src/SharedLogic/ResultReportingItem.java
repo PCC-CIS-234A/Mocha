@@ -1,7 +1,4 @@
-package ResultReporting;
-
-import SharedLogic.Item;
-import SharedLogic.Result;
+package SharedLogic;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,16 +9,16 @@ import java.util.Collections;
  *
  * An extension of the Item class which also stores the number of wins/losses/ties for that Item
  */
-public class ReportingItem extends Item implements Comparable<ReportingItem> {
+public class ResultReportingItem extends Item implements Comparable<ResultReportingItem> {
     private int wins;
     private int losses;
     private int ties;
 
-    public ReportingItem(int itemID, int testID, String name) {
+    public ResultReportingItem(int itemID, int testID, String name) {
         super(itemID, testID, name);
     }
 
-    public ReportingItem(int itemID, int testID, String name, int wins, int losses, int ties) {
+    public ResultReportingItem(int itemID, int testID, String name, int wins, int losses, int ties) {
         super(itemID, testID, name);
 
         this.wins = wins;
@@ -29,7 +26,7 @@ public class ReportingItem extends Item implements Comparable<ReportingItem> {
         this.ties = ties;
     }
 
-    public ReportingItem(Item item) {
+    public ResultReportingItem(Item item) {
         super(item.getMyItemID(), item.getMyTestID(), item.getMyName());
 
         this.wins = 0;
@@ -93,8 +90,8 @@ public class ReportingItem extends Item implements Comparable<ReportingItem> {
         ties++;
     }
 
-    public static ArrayList<ReportingItem> buildReportingItems(ArrayList<Result> results) {
-        ArrayList<ReportingItem> reportingItems = new ArrayList<>();
+    public static ArrayList<ResultReportingItem> buildReportingItems(ArrayList<Result> results) {
+        ArrayList<ResultReportingItem> resultReportingItems = new ArrayList<>();
 
         for (Result result : results) {
             int winnerExists = -1;
@@ -103,23 +100,23 @@ public class ReportingItem extends Item implements Comparable<ReportingItem> {
                 Item winner = result.getWinner();
                 Item loser = result.getLoser();
 
-                winnerExists = checkForResult(reportingItems, winner);
-                loserExists = checkForResult(reportingItems, loser);
+                winnerExists = checkForResult(resultReportingItems, winner);
+                loserExists = checkForResult(resultReportingItems, loser);
 
                 if (winnerExists != -1) {
-                    reportingItems.get(winnerExists).addWin();
+                    resultReportingItems.get(winnerExists).addWin();
                 } else {
-                    ReportingItem newReportingItem = new ReportingItem(winner);
-                    newReportingItem.addWin();
-                    reportingItems.add(newReportingItem);
+                    ResultReportingItem newResultReportingItem = new ResultReportingItem(winner);
+                    newResultReportingItem.addWin();
+                    resultReportingItems.add(newResultReportingItem);
                 }
 
                 if (loserExists != -1) {
-                    reportingItems.get(loserExists).addLoss();
+                    resultReportingItems.get(loserExists).addLoss();
                 } else {
-                    ReportingItem newReportingItem = new ReportingItem(loser);
-                    newReportingItem.addLoss();
-                    reportingItems.add(newReportingItem);
+                    ResultReportingItem newResultReportingItem = new ResultReportingItem(loser);
+                    newResultReportingItem.addLoss();
+                    resultReportingItems.add(newResultReportingItem);
                 }
 
             }
@@ -127,23 +124,23 @@ public class ReportingItem extends Item implements Comparable<ReportingItem> {
                 ArrayList<Item> ties = result.getTies();
 
                 for (Item tie : ties) {
-                    int tieIndex = checkForResult(reportingItems, tie);
+                    int tieIndex = checkForResult(resultReportingItems, tie);
 
                     if (tieIndex != -1) {
-                        reportingItems.get(tieIndex).addTie();
+                        resultReportingItems.get(tieIndex).addTie();
                     }
                     else {
-                        ReportingItem newReportingItem = new ReportingItem(tie);
-                        newReportingItem.addTie();
-                        reportingItems.add(newReportingItem);
+                        ResultReportingItem newResultReportingItem = new ResultReportingItem(tie);
+                        newResultReportingItem.addTie();
+                        resultReportingItems.add(newResultReportingItem);
                     }
                 }
             }
         }
 
-        Collections.sort(reportingItems);
+        Collections.sort(resultReportingItems);
 
-        return reportingItems;
+        return resultReportingItems;
     }
 
     /**
@@ -152,9 +149,9 @@ public class ReportingItem extends Item implements Comparable<ReportingItem> {
      * @param testSessionID determines which TestSessionID to search for
      * @return an ArrayList of ReportingItems for a given testSession
      */
-    public static ArrayList<ReportingItem> retrieveReportingItemsOnTest(int testSessionID) {
+    public static ArrayList<ResultReportingItem> retrieveReportingItemsOnTest(int testSessionID) {
         ArrayList<Result> results = Result.retrieveTestSessionResults(testSessionID);
-        ArrayList<ReportingItem> reportingItems = new ArrayList<>();
+        ArrayList<ResultReportingItem> resultReportingItems = new ArrayList<>();
 
         for (Result result : results) {
             int winnerExists = -1;
@@ -163,23 +160,23 @@ public class ReportingItem extends Item implements Comparable<ReportingItem> {
                 Item winner = result.getWinner();
                 Item loser = result.getLoser();
 
-                winnerExists = checkForResult(reportingItems, winner);
-                loserExists = checkForResult(reportingItems, loser);
+                winnerExists = checkForResult(resultReportingItems, winner);
+                loserExists = checkForResult(resultReportingItems, loser);
 
                 if (winnerExists != -1) {
-                    reportingItems.get(winnerExists).addWin();
+                    resultReportingItems.get(winnerExists).addWin();
                 } else {
-                    ReportingItem newReportingItem = new ReportingItem(winner);
-                    newReportingItem.addWin();
-                    reportingItems.add(newReportingItem);
+                    ResultReportingItem newResultReportingItem = new ResultReportingItem(winner);
+                    newResultReportingItem.addWin();
+                    resultReportingItems.add(newResultReportingItem);
                 }
 
                 if (loserExists != -1) {
-                    reportingItems.get(loserExists).addLoss();
+                    resultReportingItems.get(loserExists).addLoss();
                 } else {
-                    ReportingItem newReportingItem = new ReportingItem(loser);
-                    newReportingItem.addLoss();
-                    reportingItems.add(newReportingItem);
+                    ResultReportingItem newResultReportingItem = new ResultReportingItem(loser);
+                    newResultReportingItem.addLoss();
+                    resultReportingItems.add(newResultReportingItem);
                 }
 
             }
@@ -187,37 +184,37 @@ public class ReportingItem extends Item implements Comparable<ReportingItem> {
                 ArrayList<Item> ties = result.getTies();
 
                 for (Item tie : ties) {
-                    int tieIndex = checkForResult(reportingItems, tie);
+                    int tieIndex = checkForResult(resultReportingItems, tie);
 
                     if (tieIndex != -1) {
-                        reportingItems.get(tieIndex).addTie();
+                        resultReportingItems.get(tieIndex).addTie();
                     }
                     else {
-                        ReportingItem newReportingItem = new ReportingItem(tie);
-                        newReportingItem.addTie();
-                        reportingItems.add(newReportingItem);
+                        ResultReportingItem newResultReportingItem = new ResultReportingItem(tie);
+                        newResultReportingItem.addTie();
+                        resultReportingItems.add(newResultReportingItem);
                     }
                 }
             }
         }
 
-        Collections.sort(reportingItems);
+        Collections.sort(resultReportingItems);
 
-        return reportingItems;
+        return resultReportingItems;
     }
 
     /**
      * checks for the item in the reportingItem list and returns the index of the instance of the item or -1
      * if the item doesn't exist in the list.
      *
-     * @param reportingItems the ArrayList of ReportingItems which might contain the item
+     * @param resultReportingItems the ArrayList of ReportingItems which might contain the item
      * @param item the Item to search for in the ArrayList of ReportingItems
      * @return the index of the item or -1 if the item isn't in the list.
      */
-    private static int checkForResult(ArrayList<ReportingItem> reportingItems, Item item) {
-        for (ReportingItem reportingItem : reportingItems) {
-            if (reportingItem.getMyName().equals(item.getMyName())) {
-                return reportingItems.indexOf(reportingItem);
+    private static int checkForResult(ArrayList<ResultReportingItem> resultReportingItems, Item item) {
+        for (ResultReportingItem resultReportingItem : resultReportingItems) {
+            if (resultReportingItem.getMyName().equals(item.getMyName())) {
+                return resultReportingItems.indexOf(resultReportingItem);
             }
         }
 
@@ -225,14 +222,14 @@ public class ReportingItem extends Item implements Comparable<ReportingItem> {
     }
 
     /**
-     * @param reportingItem the ReportingItem to compare against
+     * @param resultReportingItem the ResultReportingItem to compare against
      * @return the object with the higher score
      *
-     * Allows ReportingItem ArrayLists to be sorted
+     * Allows ResultReportingItem ArrayLists to be sorted
      */
     @Override
-    public int compareTo(ReportingItem reportingItem) {
-        int score = reportingItem.getScore();
+    public int compareTo(ResultReportingItem resultReportingItem) {
+        int score = resultReportingItem.getScore();
 
         return score - this.getScore();
     }
