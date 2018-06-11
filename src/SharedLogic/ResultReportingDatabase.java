@@ -1,6 +1,5 @@
-package ResultReporting;
+package SharedLogic;
 
-import SharedLogic.*;
 import java.util.ArrayList;
 
 
@@ -10,14 +9,14 @@ import java.util.ArrayList;
  *
  * Description: Makes all data from the database available
  */
-public class Data {
+public class ResultReportingDatabase {
     private ArrayList<Item> items;
     private ArrayList<Result> results;
     private ArrayList<Test> tests;
     private ArrayList<TestSession> testSessions;
     private ArrayList<UserAccount> users;
 
-    public Data() {
+    public ResultReportingDatabase() {
         retrieveAll();
     }
 

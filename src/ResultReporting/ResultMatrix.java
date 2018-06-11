@@ -3,6 +3,7 @@ package ResultReporting;
 import SharedLogic.Item;
 import SharedLogic.TestSession;
 import SharedLogic.Result;
+import SharedLogic.ResultReportingItem;
 
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
@@ -30,7 +31,7 @@ public class ResultMatrix {
 
     private DefaultTableModel matrixTableModel;
     private String testName;
-    private List<ReportingItem> items;
+    private List<ResultReportingItem> items;
     private ArrayList<Result> results;
 
     public ResultMatrix(JFrame frame, ResultScoresForm resScoForm) {
@@ -77,7 +78,7 @@ public class ResultMatrix {
 
         columns[0] = " ";
         for(int i = 1; i < horz; i++) {
-            ReportingItem item = items.get(i - 1);
+            ResultReportingItem item = items.get(i - 1);
             columns[i] = item.getMyName();
         }
         return columns;
@@ -97,7 +98,7 @@ public class ResultMatrix {
 
         //loops it through the row headings
         for(int i = 0; i < vert; i++) {
-            ReportingItem item = items.get(i);
+            ResultReportingItem item = items.get(i);
             rows[i][0] = item.getMyName();
             //loops it through the each cell
             for (int j = 1; j < horz; j++) {
@@ -265,7 +266,7 @@ public class ResultMatrix {
      */
     private int itemLength() {
         int maxItemCharLength = matrixTable.getColumnModel().getColumn(0).getMinWidth();
-        for (ReportingItem item : items) {
+        for (ResultReportingItem item : items) {
             int charLength = item.getMyName().length();
             if(charLength > maxItemCharLength) {
                 maxItemCharLength = charLength;
@@ -278,9 +279,9 @@ public class ResultMatrix {
      * Sorts the items by their itemID
      */
     private void sortItems() {
-        Collections.sort(items, new Comparator<ReportingItem>() {
+        Collections.sort(items, new Comparator<ResultReportingItem>() {
             @Override
-            public int compare(ReportingItem o1, ReportingItem o2) {
+            public int compare(ResultReportingItem o1, ResultReportingItem o2) {
                 if (o1.getMyItemID() > o2.getMyItemID()) {
                     return 1;
                 } else if (o1.getMyItemID() < o2.getMyItemID()) {
