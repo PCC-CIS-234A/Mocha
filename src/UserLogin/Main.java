@@ -1,5 +1,6 @@
 package UserLogin;
 
+import ResultReporting.ResultReportingStartup;
 import UserLogin.Forms.LoginForm;
 import UserLogin.Forms.RegisterForm;
 import UserLogin.Objects.UserAccount;
@@ -10,7 +11,7 @@ import javax.swing.*;
 import static javax.swing.SwingUtilities.invokeLater;
 
 /**
- * @author Anh Nguyen
+ * @author Anh Nguyen and Bobby Puckett (minor changes to login())
  * @version 4/25/2018
  * Description: This is the controller class for UserLogin GUIs
  * This class is also control what a user can do based on their role
@@ -72,18 +73,24 @@ public class Main {
     // If user's login is successful, different roles will assigned different messages
         if(role.equals("user")) {
             // redirect to User page
-            JOptionPane.showMessageDialog(null, "User Taking Test Page");
+//            JOptionPane.showMessageDialog(null, "User Taking Test Page");
+            UserTakingTest.Main.main(null);
+//            myFrame.dispose();
             return;
         }
         if(role.equals("admin")) {
             // redirect to admin page
-           JOptionPane.showMessageDialog(null, "Show Admin Setup Page");
+//           JOptionPane.showMessageDialog(null, "Show Admin Setup Page");
+            AdminSetup.Main.main(null);
+            myFrame.dispose();
           //  new SetupTest();
             return;
         }
         if(role.equals("therapist")) {
             // redirect to therapist page
-            JOptionPane.showMessageDialog(null, "Show Report Page");
+//            JOptionPane.showMessageDialog(null, "Show Report Page");
+            ResultReportingStartup.main(null);
+            myFrame.dispose();
             return;
         }
         }
