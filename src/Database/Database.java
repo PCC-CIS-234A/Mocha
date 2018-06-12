@@ -9,11 +9,8 @@ import java.util.ArrayList;
 
 /**
  * Class to interact with the database
- * @author Liz Goltz with input from team Mocha
- * @version 4/26/2018
- *
- * modifications:
- * - added UserTakingTest database methods
+ * @author Liz Goltz & Rebecca Kennedy (executeItemsBatch() and executeAnUpdate())
+ * @version 6/12/2018
  */
 public class Database {
     //connection fields
@@ -54,6 +51,56 @@ public class Database {
         catch (SQLException e) {
             System.out.println(e.getMessage());
             return null;
+        }
+    }
+
+    /**
+     * Executes an update to the database
+     *
+     * Added by Rebecca Kennedy on 5/24/18
+     *
+     * @param sqlString
+     * @return
+     */
+    public boolean executeAnUpdate(String sqlString) {
+        try {
+            connect();
+            Statement statement = mConnection.createStatement();
+            statement.executeUpdate(sqlString);
+
+            return true;
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Executes a batch of items
+     *
+     * Added by Rebecca Kennedy on 5/23/18
+     *
+     * @param sqlString query to the database
+     * @param items arraylist of items
+     * @return ResultSet object
+     */
+    public boolean executeItemsBatch(String sqlString, ArrayList<AdminSetup.AdminSetupItem> items) {
+        try {
+            connect();
+            PreparedStatement statement = mConnection.prepareStatement(sqlString);
+
+            for(AdminSetup.AdminSetupItem item: items) {
+                statement.setInt(1, item.getMyTestID());
+                statement.setString(2, item.getMyName());
+                statement.addBatch();
+            }
+            statement.executeBatch();
+            return true;
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
         }
     }
 

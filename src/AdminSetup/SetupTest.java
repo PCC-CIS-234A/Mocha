@@ -61,4 +61,8 @@ public class SetupTest {
         frame.pack();
         frame.setVisible(true);
     }
+
+    public static void disposeGUI() {
+        frame.dispose();
+    }
 }

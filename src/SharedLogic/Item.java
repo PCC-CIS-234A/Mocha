@@ -3,6 +3,7 @@ package SharedLogic;
 import Database.Database;
 import org.omg.CORBA.PUBLIC_MEMBER;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -32,10 +33,14 @@ public class Item {
         this.myTestID = testID;
         this.myName = name;
     }
+
+    public Item(int testID, String name) {
+        this.myTestID = testID;
+        this.myName = name;
+    }
     // CONSTRUCTORS END
 
     // DATABASE METHODS
-
     /**
      * returns every Item in the database
      *
@@ -182,6 +187,40 @@ public class Item {
         return items;
     }
 
+
+    /**
+     * Retrieves all Items from the database with the testID and returns them in an ArrayList
+     *
+     * Added by Rebecca Kennedy 5/23/18
+     *
+     * @param testID the TestID to search for in the database
+     * @return an ArrayList of Items on a Test
+     */
+    public static ArrayList<AdminSetup.AdminSetupItem> retrieveItemsOnTestAsAdminSetupItem(int testID) {
+        ArrayList<AdminSetup.AdminSetupItem> items = new ArrayList<>();
+
+        Database database = new Database();
+
+        ResultSet itemsResultSet = database.execute(GET_ITEMS_ON_TEST + testID);
+        try {
+            while (itemsResultSet.next()) {
+                int newItemID = itemsResultSet.getInt("ItemID");
+                int newTestID = itemsResultSet.getInt("TestID");
+                String newName = itemsResultSet.getString("Name");
+
+                AdminSetup.AdminSetupItem item = new AdminSetup.AdminSetupItem(newItemID, newTestID, newName);
+
+                items.add(item);
+            }
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return items;
+    }
+
+
     /**
      * Inserts an Item into the database
      * @param item the Item to insert
@@ -193,6 +232,38 @@ public class Item {
 
         database.execute(query);
     }
+
+    /**
+     * Inserts the items for a particular test.
+     *
+     * Moved over from Rebecca Kennedy's story on 5/23/18
+     */
+    public static boolean insertItems(ArrayList<AdminSetup.AdminSetupItem> items) {
+
+        Database database = new Database();
+
+        String query = "INSERT INTO ITEM (TestID, Name)\n" +
+                "VALUES (?, ?);";
+
+        return database.executeItemsBatch(query, items);
+    }
+
+    /**
+     * Deletes particular items of a particular test.
+     *
+     * Migrated over from Rebecca Kennedy's story on 5/23/18
+     */
+    public static boolean deleteItems(ArrayList<AdminSetup.AdminSetupItem> items) {
+
+        Database database = new Database();
+
+        String query = "DELETE FROM ITEM\n" +
+                "WHERE ITEM.TestID = ?\n" +
+                "AND ITEM.Name = ?;";
+
+        return database.executeItemsBatch(query, items);
+    }
+
     // DATABASE METHODS END
 
     // GETTERS / SETTERS
@@ -224,6 +295,24 @@ public class Item {
     }
 
     /**
+     * Sets the TestID
+     *
+     * Migrated from Rebecca Kennedy's code on 5/23/18
+     */
+    public void setTestID(int testID) {
+        myTestID = testID;
+    }
+
+    /**
+     * Sets the name
+     *
+     * Migrated from Rebecca Kennedy's code on 5/23/18
+     */
+    public void setName(String name) {
+        myName = name;
+    }
+
+    /**
      * Returns a list of Item names (migrated from Liz's Item class)
      *
      * @param testID the TestID (formerly "collectionID") to search for
@@ -248,21 +337,3 @@ public class Item {
         return getMyName();
     }
 }
-
-/*
- * NOTES:
- *
- * Liz -    In your MochaDB class, there's a readItems(int collectionID) method which returns a list of strings.
- *          I've included this in this class, so that you don't have to migrate over.
- *
- *          (from next day) I believe the String array from readItems is passed to a combobox or similar widget. You
- *          might consider whether you want to pass the Item object itself. Because of the overridden toString() method,
- *          the widget will be able to read the names from the Item without you doing extra work. It also helps when you
- *          need to do something with the widget. Instead of saying something like "find Item where myName is the widget
- *          myName," you can pass the currently selected Item stored in the widget. The way you'd do this is -
- *
- *              nameOfComboBox.add(Item);
- *
- *          Where "Item" is the item you want to pass. Either method is a fine way of doing things. Choose what you feel
- *          better about :)
- */

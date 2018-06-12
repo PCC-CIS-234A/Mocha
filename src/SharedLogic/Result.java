@@ -121,6 +121,7 @@ public class Result {
 
         try {
             ArrayList<Item> allItems = Item.retrieveAllItems();
+
             while (resultResultSet.next()) {
                 int newItemOneID = resultResultSet.getInt("Item1");
                 int newItemTwoID = resultResultSet.getInt("Item2");
@@ -141,6 +142,51 @@ public class Result {
 
                 if (itemOne != null && itemTwo != null) {
                     Result result = new Result(itemOne, itemTwo, newResultCode, newResultID, newSessionID);
+                }
+                else {
+                    System.out.println("Result: Items could not be initialized");
+                }
+            }
+
+        } catch (
+                SQLException e)
+
+        {
+            System.out.println(e.getMessage());
+        }
+
+        return results;
+    }
+    public static ArrayList<Result> retrieveAllResults(ArrayList<Item> allItems) {
+        Database database = new Database();
+
+        ArrayList<Result> results = new ArrayList<>();
+
+
+        ResultSet resultResultSet = database.execute(GET_ALL_RESULTS);
+
+        try {
+            while (resultResultSet.next()) {
+                int newItemOneID = resultResultSet.getInt("Item1");
+                int newItemTwoID = resultResultSet.getInt("Item2");
+                int newResultCode = resultResultSet.getInt("ResultCode");
+                int newResultID = resultResultSet.getInt("ResultID");
+                int newSessionID = resultResultSet.getInt("SessionID");
+
+                Item itemOne = null;
+                Item itemTwo = null;
+
+                for(Item item : allItems) {
+                    if (item.getMyItemID() == newItemOneID) {
+                        itemOne = item;
+                    } else if (item.getMyItemID() == newItemTwoID) {
+                        itemTwo = item;
+                    }
+                }
+
+                if (itemOne != null && itemTwo != null) {
+                    Result result = new Result(itemOne, itemTwo, newResultCode, newResultID, newSessionID);
+                    results.add(result);
                 }
                 else {
                     System.out.println("Result: Items could not be initialized");
@@ -301,10 +347,3 @@ public class Result {
     }
     //GETTERS / SETTERS END
 }
-
-/*
- * NOTES:
- *
- * Liz - Result class replaces your ItemPair class.
- *
- */

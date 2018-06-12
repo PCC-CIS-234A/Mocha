@@ -1,8 +1,8 @@
 package ResultReporting;
 
 import SharedLogic.*;
+import UserLogin.Main;
 
-import javax.print.DocFlavor;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -12,76 +12,43 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 /**
- * @author Bobby Puckett
- * @version 5/8/2018
- *
+ * @author Bobby Puckett and Rebecca Kennedy (RK made small changes)
+ * @version 5/29/2018
+ * <p>
  * Description: Provides a way to communicate with the ResultScores GUI
  */
 public class ResultScoresForm {
     private JPanel resultScoresPanel;
-    private JPanel testPanel;
-    private JList<String> testList;
-    private JLabel testLabel;
     private JPanel resultsPanel;
     private JLabel resultsLabel;
     private JTable resultsTable;
     private JButton finishButton;
     private JComboBox userComboBox;
+    private JComboBox testComboBox;
+    private JButton detailedResultsButton; //RK added 5/30/18
+    private JButton statisticsButton; //RK added 5/30/18
 
-    private Vector<String> testListVector;
     private DefaultTableModel resultsTableModel;
-    private ArrayList<UserAccount> users;
-    private ArrayList<TestSession> testSessions;
+    private ResultReportingDatabase resultReportingDatabase;
+    private JFrame frame;
+    private ArrayList<ResultReportingItem> reportingItems; // RK added 5/31/18
+    private ArrayList<Result> results; // RK added 5/31/18
 
-    public ResultScoresForm(ArrayList<UserAccount> users) {
-        resultScoresPanel.setPreferredSize(new Dimension(600, 400));
+    public ResultScoresForm(JFrame frame) {
+        /* RK edit 5/30/18 Changed width to 700. Kept Bobby's original line and have new line. */
+      //  resultScoresPanel.setPreferredSize(new Dimension(600, 400));
+        resultScoresPanel.setPreferredSize(new Dimension(700, 400));
+        this.frame = frame;
 
-        //dimensions for sprint 2
-        //resultScoresPanel.setPreferredSize(new Dimension(800,400));
+        resultReportingDatabase = new ResultReportingDatabase();
 
-        this.users = users;
-
-        initializeTestList();
         initializeResultsTable();
         initializeUserComboBox();
-
+        initializeTestComboBox();
         initializeFinishButton();
-    }
-    public ResultScoresForm() {
-        resultScoresPanel.setPreferredSize(new Dimension(600, 400));
-
-        //dimensions for sprint 2
-        //resultScoresPanel.setPreferredSize(new Dimension(800,400));
-
-        this.users = UserAccount.retrieveUsersOnRole("user");
-
-        this.testSessions = new ArrayList<>();
-        users.forEach(userAccount -> {
-            ArrayList<TestSession> userTestSessions = TestSession.retrieveTestSessionsOnUser(userAccount);
-
-            if (userTestSessions != null) {
-                this.testSessions.addAll(userTestSessions);
-            }
-        });
-
-
-        initializeTestList();
-        initializeResultsTable();
-        initializeUserComboBox();
-
-        initializeFinishButton();
-    }
-
-    /**
-     * Keeps the constructor short by initializing the testList
-     */
-    private void initializeTestList() {
-        testListVector = new Vector<>();
-        //@todo make sure this still works
-        testList.setListData(testListVector);
-
-        //disabling test pannel for first sprint
-        testPanel.setVisible(false);
+        //RK edit 5/30/18 added detailedResultsButton and statisticsButton
+        initializeDetailedResultsButton();
+        initializeStatisticsButton();
     }
 
     /**
@@ -102,57 +69,100 @@ public class ResultScoresForm {
     /**
      * Keeps the constructor short by initializing the userComboBox.
      * <p>
-     * Suppressing the unchecked warning because I'm using a non-primitive data type
+     * Suppressing the unchecked warning because I'm using a non-primitive resultReportingDatabase type
      * and adding it to the ComboBox
      */
     @SuppressWarnings("unchecked")
     private void initializeUserComboBox() {
-
-        for (UserAccount u : users) {
-            userComboBox.addItem(u);
+        for (UserAccount u : resultReportingDatabase.getUsers()) {
+            if (u.getMyRole().equals("user")) {
+                for (TestSession session : resultReportingDatabase.getTestSessions()) {
+                    if (session.getMyUser().getMyUserID() == u.getMyUserID()) {
+                        userComboBox.addItem(u);
+                        break;
+                    }
+                }
+            }
         }
 
-        userComboBox.addActionListener(e -> {
-            repopulateResultTable((UserAccount) userComboBox.getSelectedItem());
-        });
+        userComboBox.addActionListener(e -> repopulateTestComboBox((UserAccount) userComboBox.getSelectedItem()));
+    }
 
-        repopulateResultTable((UserAccount) userComboBox.getSelectedItem());
+    /**
+     * Keeps the constructor short by initializing the testComboBox.
+     * <p>
+     * Suppressing the unchecked warning because I'm using a non-primitive resultReportingDatabase type
+     * and adding it to the ComboBox
+     */
+    @SuppressWarnings("unchecked")
+    private void initializeTestComboBox() {
+        testComboBox.addActionListener(e -> repopulateResultTable((TestSession) testComboBox.getSelectedItem()));
+
+        repopulateTestComboBox((UserAccount) userComboBox.getSelectedItem());
     }
 
     /**
      * Keeps the constructor short by initializing the finishButton
      */
     private void initializeFinishButton() {
-        finishButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
+        finishButton.addActionListener(e -> {
+            frame.dispose();
+            Main.createGUI();
         });
     }
 
     /**
-     * Adds a test to the testList
+     * RK: Adding this on 5/30/18
      *
-     * @param test the test object to be added
+     * Keeps the constructor short by initializing the detailedResultsButton
+     * Sets up the ResultMatrix GUI
      */
-    public void addTest(Test test) {
-        testListVector.add(test.getMyName());
+    private void initializeDetailedResultsButton() {
+
+        detailedResultsButton.addActionListener(e -> {
+            JFrame detResFrame = new JFrame("Detailed Results");
+            ResultMatrix resultMatrix = new ResultMatrix(detResFrame, this);
+            detResFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+            detResFrame.getContentPane().add(resultMatrix.getResultMatrixPanel());
+            detResFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            detResFrame.setVisible(true);
+            detResFrame.pack();
+        });
+    }
+
+    /**
+     * RK: Adding this on 5/30/18
+     *
+     * Keeps the constructor short by initializing the statisticsButton
+     * Sets up the CumulativeStatistics GUI
+     */
+    private void initializeStatisticsButton() {
+        statisticsButton.addActionListener(e -> {
+            JFrame statFrame = new JFrame("Cumulative Statistics");
+            CumulativeStatistics cumStat = new CumulativeStatistics(statFrame);
+            statFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+            statFrame.getContentPane().add(cumStat.getcumStatPanel());
+            statFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            statFrame.setVisible(true);
+            statFrame.pack();
+        });
     }
 
     /**
      * Adds a row to the resultsTable
      *
-     * @param reportingItem the reportingItem to be added
+     * @param resultReportingItem the resultReportingItem to be added
      */
-    public void addReportingItem(ReportingItem reportingItem) {
+    private void addReportingItem(ResultReportingItem resultReportingItem) {
         Vector<String> rowData = new Vector<>();
 
-        rowData.add(String.valueOf(reportingItem.getScore()));
-        rowData.add(reportingItem.getMyName());
-        rowData.add(String.valueOf(reportingItem.getWins()));
-        rowData.add(String.valueOf(reportingItem.getLosses()));
-        rowData.add(String.valueOf(reportingItem.getTies()));
+        rowData.add(String.valueOf(resultReportingItem.getScore()));
+        rowData.add(resultReportingItem.getMyName());
+        rowData.add(String.valueOf(resultReportingItem.getWins()));
+        rowData.add(String.valueOf(resultReportingItem.getLosses()));
+        rowData.add(String.valueOf(resultReportingItem.getTies()));
 
         resultsTableModel.addRow(rowData);
     }
@@ -160,45 +170,107 @@ public class ResultScoresForm {
     /**
      * Deletes and reinstanciates the ResultTable
      *
-     * @param selectedUser the user to get tests to repopulate the table from
+     * @param testSession the testSession to fill the result table with
      */
-    private void repopulateResultTable(UserAccount selectedUser) {
+    private void repopulateResultTable(TestSession testSession) {
+        UserAccount selectedUser = (UserAccount) userComboBox.getSelectedItem();
         int rowCount = resultsTableModel.getRowCount();
         for (int i = 0; i < rowCount; i++) {
             resultsTableModel.removeRow(0);
         }
-        ArrayList<TestSession> userTestSessions = new ArrayList<>();
 
-        testSessions.forEach(testSession -> {
-            if (testSession.getMyUser().getMyUserName() == selectedUser.getMyUserName()) {
-                userTestSessions.add(testSession);
+        /* RK modified 5/31/18. Kept both lines. Changed results to be a private field instead of a local variable */
+      //  ArrayList<Result> results = new ArrayList<>();
+        results = new ArrayList<>();
+        if (testSession != null) {
+            int id = testSession.getMySessionID();
+
+            resultReportingDatabase.getResults().forEach(dataResult -> {
+                if (dataResult.getMySessionID() == id) {
+                    results.add(dataResult);
+                }
+            });
+
+            /* RK modified 5/31/18. Kept both lines. Changed reportingItems to be a private field instead of a local variable */
+         //   ArrayList<ReportingItem> reportingItems = ReportingItem.buildReportingItems(results);
+            reportingItems = ResultReportingItem.buildReportingItems(results);
+
+            if (reportingItems.size() > 0) {
+                for (ResultReportingItem i : reportingItems) {
+                    addReportingItem(i);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, selectedUser.getMyUserName() + " has taken this test, but the results weren't stored.");
+            }
+        }
+    }
+
+    /**
+     * Deletes and reinstanciates the testComboBox
+     *
+     * @param user specifies which tests will be displayed
+     */
+    private void repopulateTestComboBox(UserAccount user) {
+        testComboBox.removeAllItems();
+
+        resultReportingDatabase.getTestSessions().forEach(testSession -> {
+            if (testSession.getMyUser().getMyUserID() == user.getMyUserID()) {
+                testComboBox.addItem(testSession);
             }
         });
 
-        TestSession testSession;
+        if (testComboBox.getItemCount() == 0) {
+            JOptionPane.showMessageDialog(null, user.getMyUserName() + " has not taken any tests.");
+            enableDetailedResultsButton(0); //  5/31/18 RK added call to enableDetailedResultsButton()
+        } else {  //  5/31/18 RK added else part of if statement
+            enableDetailedResultsButton(1);
+        }
+    }
 
-        if (userTestSessions.size() > 0) {
-            testSession = userTestSessions.get(0);
-            ArrayList<ReportingItem> test = ReportingItem.retrieveReportingItemsOnTest(testSession.getMyTest().getMyTestID());
+    /**
+     * RK added this method 5/31/18
+     * Getter for selected TestSession
+     *
+     * @return the ts
+     */
+    public TestSession getTestSession() {
+        TestSession ts = (TestSession) testComboBox.getSelectedItem();
+        return ts;
+    }
 
-            if (test.size() > 0) {
-                for (ReportingItem i : test) {
-                    addReportingItem(i);
-                }
-            }
-            else {
-                JOptionPane.showMessageDialog(null, selectedUser.getMyUserName() + " has not taken this test");
-            }
+    /**
+     * RK added this method 5/31/18
+     * Getter for selected TestSession
+     *
+     * @return the ts
+     */
+    public ArrayList<ResultReportingItem> getReportingItems() {
+        return reportingItems;
+    }
+
+    /**
+     * RK added this method 5/31/18
+     * Getter for results
+     *
+     * @return the results
+     */
+    public ArrayList<Result> getResults() {
+        return results;
+    }
+
+    /**
+     * 5/31/18 Rebecca Kennedy added this method
+     *
+     * Enables or disables the detailedResultsButton
+     * @param i
+     */
+    public void enableDetailedResultsButton(int i) {
+        if(i == 0) {
+            detailedResultsButton.setEnabled(false);
+        } else if (i == 1) {
+            detailedResultsButton.setEnabled(true);
         }
 
-        else {
-            if (selectedUser != null) {
-                JOptionPane.showMessageDialog(null, selectedUser.getMyUserName() + " has not taken any tests");
-            }
-            else {
-                JOptionPane.showMessageDialog(null, "user has not taken any tests");
-            }
-        }
     }
 
     /**

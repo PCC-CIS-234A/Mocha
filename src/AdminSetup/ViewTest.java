@@ -17,7 +17,7 @@ public class ViewTest {
     private JScrollPane itemScrollPane;
     private JList itemList;
     private JButton finishButton;
-    private ArrayList<Item> items;
+    private ArrayList<SharedLogic.Item> items;
     private DefaultListModel listModel;
     private int myTestID;
 
@@ -29,12 +29,9 @@ public class ViewTest {
         listModel = new DefaultListModel();
         itemList.setModel(listModel);
 
-        items = Item.getTestItems(myTestID);
+        items = SharedLogic.Item.retrieveItemsOnTest(myTestID);
 
-        //Add all items to the list
-        for(Item item: items) {
-            listModel.addElement(item.getName());
-        }
+         addItemsToList();
 
          finishButton.addActionListener(new ActionListener() {
              @Override
@@ -56,6 +53,15 @@ public class ViewTest {
      */
     public void setTestID(int testID) {
          myTestID = testID;
+    }
+
+    /**
+     * Add all items to the list
+     */
+    public void addItemsToList() {
+        for(SharedLogic.Item item: items) {
+            listModel.addElement(item.getMyName());
+        }
     }
 
     /**
