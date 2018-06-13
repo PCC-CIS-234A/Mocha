@@ -64,13 +64,9 @@ public class Main {
 
         UserAccountDB userAccountDb = new UserAccountDB();
         UserAccount user = userAccountDb.getUser(myEmail,myPassword);
-        UserAccount userEmail = userAccountDb.getUserByEmail(myEmail);
 
     // If user's login is failed , error message will pop up
-        if (userEmail == null) {
-            JOptionPane.showMessageDialog(null,"Sorry! you are not registered!");
-            return;
-        }
+
         if(user == null) {
             JOptionPane.showMessageDialog(null,"Incorrect Email or Password");
             return;
