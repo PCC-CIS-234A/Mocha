@@ -1,41 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="ResultReporting.ResultScoresForm">
-  <grid id="27dc6" binding="resultScoresPanel" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="resultScoresPanel" layout-manager="GridLayoutManager" row-count="8" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="500" height="400"/>
+      <xy x="20" y="20" width="653" height="400"/>
     </constraints>
     <properties/>
     <border type="empty">
       <size top="10" left="10" bottom="10" right="10"/>
     </border>
     <children>
-      <grid id="1df0" binding="testPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+      <component id="6ac1d" class="javax.swing.JButton" binding="finishButton">
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="2" use-parent-layout="false"/>
+          <grid row="7" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <enabled value="false"/>
+          <text value="Finish"/>
         </properties>
-        <border type="empty">
-          <size top="10" left="10" bottom="10" right="10"/>
-        </border>
-        <children>
-          <component id="124fd" class="javax.swing.JList" binding="testList">
-            <constraints border-constraint="Center"/>
-            <properties/>
-          </component>
-          <component id="a603b" class="javax.swing.JLabel" binding="testLabel">
-            <constraints border-constraint="North"/>
-            <properties>
-              <text value="Test"/>
-            </properties>
-          </component>
-        </children>
-      </grid>
+      </component>
+      <component id="e423f" class="javax.swing.JComboBox" binding="userComboBox">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="298cf" class="javax.swing.JComboBox" binding="testComboBox">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="1d0c6" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font size="10"/>
+          <labelFor value="e423f"/>
+          <text value="User:"/>
+        </properties>
+      </component>
+      <component id="96c4c" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <enabled value="true"/>
+          <font size="10"/>
+          <labelFor value="298cf"/>
+          <text value="Test:"/>
+        </properties>
+      </component>
       <grid id="96afa" binding="resultsPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
         <constraints>
-          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="3" use-parent-layout="false"/>
+          <grid row="4" column="0" row-span="3" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="3" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="empty">
@@ -61,19 +79,21 @@
           </scrollpane>
         </children>
       </grid>
-      <component id="6ac1d" class="javax.swing.JButton" binding="finishButton">
+      <component id="9d0a7" class="javax.swing.JButton" binding="detailedResultsButton">
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Finish"/>
+          <text value="See Detailed Results"/>
         </properties>
       </component>
-      <component id="e423f" class="javax.swing.JComboBox" binding="userComboBox">
+      <component id="2b17d" class="javax.swing.JButton" binding="statisticsButton">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties/>
+        <properties>
+          <text value="See Statistics"/>
+        </properties>
       </component>
     </children>
   </grid>

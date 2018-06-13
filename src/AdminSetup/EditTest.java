@@ -35,7 +35,7 @@ public class EditTest {
     private JPanel actionButtonPanel;
     private JLabel uniqueItemJLabel;
     private AdminSetup.ImageLibrary.PicturePanel PicturePanel;
-    private DroppablePicturePanel showImagePanel;
+   // private DroppablePicturePanel showImagePanel;
     private ArrayList<AdminSetupItem> items;
     private DefaultListModel listModel;
     private int myTestID;
