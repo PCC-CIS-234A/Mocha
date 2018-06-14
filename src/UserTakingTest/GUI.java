@@ -71,7 +71,13 @@ public class GUI {
 
         nextButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) { nextQuestion(); }
+            public void actionPerformed(ActionEvent actionEvent) {
+                winItem = getSelectedButton(radioGroup);
+                System.out.println(winItem);
+                mTestQuestions.get(position).setWinItem(winItem);
+
+                nextQuestion();
+            }
         });
 
         previousButton.addActionListener(new ActionListener() {
@@ -87,38 +93,46 @@ public class GUI {
 
     private void displayQuestion() {
         ItemPair currentQuestion = mTestQuestions.get(position);
+
         item1Image.setImage(currentQuestion.getItem1().getImage());
         item2Image.setImage(currentQuestion.getItem2().getImage());
-        //      radioGroup.clearSelection();
+
+        radioGroup.clearSelection();
+
         item1RadioButton.setText(currentQuestion.getItem1().getName());
         item2RadioButton.setText(currentQuestion.getItem2().getName());
         tieRadioButton.setText("tie");
 
+        System.out.println("win item is: " + String.valueOf(currentQuestion.getWinItem()));
         if (currentQuestion.getWinItem() != 3) {
             if (currentQuestion.getWinItem() == 1) {
                 item1RadioButton.setSelected(true);
-            }
-            else if (currentQuestion.getWinItem() == 2) {
+            } else if (currentQuestion.getWinItem() == 2) {
                 item2RadioButton.setSelected(true);
-            }
-            else {
+            } else {
                 tieRadioButton.setSelected(true);
             }
-        }
-        else {
+        } else {
             radioGroup.clearSelection();
         }
     }
 
     private void nextQuestion() {
-        position = position + 1;
-        if (position >= mTestQuestions.size()) {
-            mTest.saveTestAnswers(mTestQuestions);
-            // You're done, exit the GUI.
-            Main.finished();
+        if (item1RadioButton.isSelected() ||
+                item2RadioButton.isSelected() ||
+                tieRadioButton.isSelected()) {
+            position = position + 1;
+
+            if (position >= mTestQuestions.size()) {
+                mTest.saveTestAnswers(mTestQuestions);
+                // You're done, exit the GUI.
+                Main.finished();
+            } else {
+                displayQuestion();
+                updateProgress();
+            }
         } else {
-            displayQuestion();
-            updateProgress();
+            JOptionPane.showMessageDialog(null, "Please select an answer before proceeding to the next question.");
         }
     }
 
@@ -144,7 +158,7 @@ public class GUI {
     private void updateProgress() {
         float pos = position;
         float questions = mTestQuestions.size() - 1;
-        int progressPercentage = (int)(100 * (pos / (questions)));
+        int progressPercentage = (int) (100 * (pos / questions));
         positionLabel.setText("Progress: " + String.valueOf(progressPercentage) + "%");
         positionProgressBar.setValue(progressPercentage);
     }

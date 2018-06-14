@@ -1,10 +1,12 @@
 package SharedLogic;
 
 import Database.Database;
-import org.omg.CORBA.PUBLIC_MEMBER;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import  java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -13,18 +15,29 @@ import java.util.ArrayList;
  * @version 5/8/2018
  *
  * Description: Retrieves, stores, and manipulates an item from the Item table in the database
+ *
+ * Modification
+ * @author: Anh Nguyen
+ * @version: 5/30/2018
+ *
+ * Added myImage variable
+ * Added constructor for ImageLibrary
+ * Added getter and setter for image property
+ * Modified retrieveItemOnName method
+ *
  */
 public class Item {
     private int myItemID;
     private int myTestID;
     private String myName;
-
+    private BufferedImage myImage;
     // QUERY FIELDS
     private static final String GET_ALL_ITEMS = "SELECT * FROM ITEM";
     private static final String GET_ITEM_ON_ID = "SELECT * FROM ITEM WHERE ItemID = ";
-    private static final String GET_ITEM_ON_NAME = "SELECT * FROM ITEM WHERE ItemName = ";
+    private static final String GET_ITEM_ON_NAME = "SELECT * FROM ITEM WHERE Name = ";
     private static final String GET_ITEMS_ON_TEST = "SELECT * FROM ITEM WHERE TestID = ";
     private static final String INSERT_ITEM = "INSERT INTO ITEM (TestID, Name) VALUES ('";
+
     // QUERY FIELDS END
 
     // CONSTRUCTORS
@@ -33,7 +46,14 @@ public class Item {
         this.myTestID = testID;
         this.myName = name;
     }
-
+    // constructor for image library
+    // Added by Anh Nguyen on 5/30/2018
+    public Item(int itemID,int testID, String name, BufferedImage Image){
+        this.myItemID = itemID;
+        this.myTestID = testID;
+        this.myName = getMyName();
+        this.setMyImage(Image);
+    }
     public Item(int testID, String name) {
         this.myTestID = testID;
         this.myName = name;
@@ -41,6 +61,7 @@ public class Item {
     // CONSTRUCTORS END
 
     // DATABASE METHODS
+
     /**
      * returns every Item in the database
      *
@@ -70,12 +91,6 @@ public class Item {
         return items;
     }
 
-    /**
-     * Returns one Item tied to the itemID or null if it doesn't exist
-     *
-     * @param itemID the itemID searched for in the database
-     * @return the Item tied to the itemID
-     */
     public static Item retrieveItemOnID(int itemID) {
         Database database = new Database();
 
@@ -86,7 +101,18 @@ public class Item {
                 int newTestID = itemResultSet.getInt("TestID");
                 String newName = itemResultSet.getString("Name");
 
-                Item item = new Item(newItemID, newTestID, newName);
+                InputStream stream = itemResultSet.getBinaryStream("Img");
+                BufferedImage newImage = null;
+
+                try {
+                    if (stream != null)
+                        newImage = ImageIO.read(stream);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                System.out.println(newName);
+                Item item = new Item(newItemID, newTestID, newName,newImage);
 
                 return item;
             }
@@ -135,17 +161,30 @@ public class Item {
      *
      * @param name the name to search for in the database
      * @return the Item in the database with the specified name
+     *
+     * Modified By Anh Nguyen on 5/30/2018
+     * Added image property
      */
     public static Item retrieveItemOnName(String name) {
         Database database = new Database();
 
-        ResultSet itemResultSet = database.execute(GET_ITEM_ON_NAME + name);
+        ResultSet itemResultSet = database.execute(GET_ITEM_ON_NAME +"'"+ name+"'");
         try {
             if (itemResultSet.next()) {
                 int newItemID = itemResultSet.getInt("ItemID");
                 int newTestID = itemResultSet.getInt("TestID");
 
-                Item item = new Item(newItemID, newTestID, name);
+                InputStream stream = itemResultSet.getBinaryStream("Img");
+                BufferedImage newImage = null;
+
+                try {
+                    if (stream != null)
+                        newImage = ImageIO.read(stream);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Item item = new Item(newItemID, newTestID, name, newImage);
 
                 return item;
             }
@@ -219,7 +258,6 @@ public class Item {
 
         return items;
     }
-
 
     /**
      * Inserts an Item into the database
@@ -326,7 +364,7 @@ public class Item {
 
         return itemNames;
     }
-    // GETTERS / SETTERS END
+
 
     /**
      * Makes Item.toString() return the Item name
@@ -335,5 +373,18 @@ public class Item {
     @Override
     public String toString() {
         return getMyName();
+    }
+
+    /**
+     * Getter and Setter for Image property
+     * Added by Anh Nguyen on 5/30/2018
+     */
+
+    public BufferedImage getMyImage() {
+        return myImage;
+    }
+
+    public void setMyImage(BufferedImage myImage) {
+        this.myImage = myImage;
     }
 }

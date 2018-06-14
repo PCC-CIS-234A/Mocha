@@ -4,12 +4,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+
+import AdminSetup.ImageLibrary.DroppablePicturePanel;
+import AdminSetup.ImageLibrary.ImageController;
+import SharedLogic.Item;
 
 /**
  * @author Rebecca Kennedy
  * @version 4/25/2018.
  * Description: This is the GUI that allows the admin to edit the items in the database.
+ *
+ * Modification
+ * @author: Anh Nguyen
+ * @version: 5/30/2018
+ * Description: add addMouseListener()- perform action when user click on an item on "Edit Test" GUI
+ *
  */
 public class EditTest {
     private JPanel rootPanel;
@@ -22,16 +34,21 @@ public class EditTest {
     private JButton finishButton;
     private JPanel actionButtonPanel;
     private JLabel uniqueItemJLabel;
+    private AdminSetup.ImageLibrary.PicturePanel PicturePanel;
+   // private DroppablePicturePanel showImagePanel;
     private ArrayList<AdminSetupItem> items;
     private DefaultListModel listModel;
     private int myTestID;
 
     public EditTest(int testID) {
+
         myTestID = testID;
 
-        rootPanel.setPreferredSize(new Dimension(400, 300));
+        rootPanel.setPreferredSize(new Dimension(600, 400));
 
         actionButtonPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
+
+        actionButtonPanel.setPreferredSize(new Dimension(250, 400));
 
         listModel = new DefaultListModel();
 
@@ -75,7 +92,40 @@ public class EditTest {
                 finishButtonActionPerformed(e);
             }
         });
-    } //end constructor
+
+        // End constructor
+
+        /**
+         * Modify by Anh Nguyen
+         * Perform action when user click on an item
+         */
+        itemList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(e.getClickCount() == 1){
+                    Object obj = itemList.getSelectedValue();
+                    String itemName = obj.toString();
+                    Item item = Item.retrieveItemOnName(itemName);
+                    try {
+                        PicturePanel.setImage(item.getMyImage());
+                    }
+                    catch (NullPointerException exception) {
+                        System.out.println("Item has no image");
+                    }
+                }
+                if (e.getClickCount() == 2) {
+                    Object obj = itemList.getSelectedValue();
+                    String itemName = obj.toString();
+
+
+                    ImageController.createGUI();
+                    ImageController.showImage(itemName);
+
+                }
+                super.mouseClicked(e);
+            }
+        });
+    }
 
     /**
      * Performs the actions that will happen when the OK button is pushed
