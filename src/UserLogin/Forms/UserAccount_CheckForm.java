@@ -1,13 +1,13 @@
-package UserLogin.BusinessLogic;
+package UserLogin.Forms;
 
-import UserLogin.DB;
-import UserLogin.Objects.UserAccount;
+import Database.UserAccountDB;
+import SharedLogic.UserAccount;
 
 /**
  * @author Anh Nguyen
  * @version 4/25/2018
- * Description: This is the UserLogin "business logic" class
- * This class force users to follow some business/security rules when
+ * Description:
+ * This class force users to follow some security rules when
  * they create an account on the Register Form
  * The rules are as following:
  * Users need to fill out all fields
@@ -17,12 +17,13 @@ import UserLogin.Objects.UserAccount;
  *     At least one number
  *     At least 1 lowercase
  *     At least 1 Uppercase
+ *     At least 1 special character
  */
 
-public class UserAccount_BL {
-    private DB db;
-    public UserAccount_BL(){
-        db = new DB();
+public class UserAccount_CheckForm {
+    private UserAccountDB userAccountDb;
+    public UserAccount_CheckForm(){
+        userAccountDb = new UserAccountDB();
     }
 
     /**
@@ -61,7 +62,8 @@ public class UserAccount_BL {
      * @return false if the email exits and false otherwise
      */
     public boolean checkEmailExists(String email){
-        UserAccount user = db.getUserByEmail(email);
+
+        UserAccount user = userAccountDb.getUserByEmail(email);
         if(user == null){
             return false;
         }else{
@@ -75,7 +77,7 @@ public class UserAccount_BL {
      * @return true if it meet the requirement and false otherwise
      */
     public Boolean checkPasswordLength(String password) {
-        if (password.length() > 15 || password.length() < 8) {
+        if (password.length() < 8) {
             return true;
         }
         return false;
@@ -117,6 +119,19 @@ public class UserAccount_BL {
     public Boolean checkPasswordLowercase(String password) {
         String lowerCaseChars = "(.*[a-z].*)";
         if (!password.matches(lowerCaseChars )) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if password contains a special character
+     * @param password
+     * @return true if it contains a special letter and false otherwise
+     */
+    public Boolean checkSpecialCharacter(String password) {
+        String specialChars = "(.*[^a-zA-Z0-9].*)";
+        if (!password.matches(specialChars)) {
             return true;
         }
         return false;

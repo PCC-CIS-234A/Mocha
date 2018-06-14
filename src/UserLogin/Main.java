@@ -1,22 +1,23 @@
 package UserLogin;
 
+
+import AdminSetup.SetupTest;
+import Database.UserAccountDB;
 import ResultReporting.ResultReportingStartup;
 import UserLogin.Forms.LoginForm;
 import UserLogin.Forms.RegisterForm;
-import UserLogin.Objects.UserAccount;
+import SharedLogic.UserAccount;
 
 import javax.swing.*;
-
 
 import static javax.swing.SwingUtilities.invokeLater;
 
 /**
- * @author Anh Nguyen and Bobby Puckett (minor changes to login())
- * @version 4/25/2018
+ * @author Anh Nguyen
+ * @version 6/6/2018
  * Description: This is the controller class for UserLogin GUIs
  * This class is also control what a user can do based on their role
  * (user can take tests/admin can set up a test/ therapist can view the report)
- * For sprint 1: only show different messages for different roles
  */
 
 
@@ -61,36 +62,32 @@ public class Main {
     public static void login() {
      //check Email and Password
 
-        DB db = new DB();
-        UserAccount user = db.getUser(myEmail,myPassword);
+        UserAccountDB userAccountDb = new UserAccountDB();
+        UserAccount user = userAccountDb.getUser(myEmail,myPassword);
 
     // If user's login is failed , error message will pop up
+
         if(user == null) {
             JOptionPane.showMessageDialog(null,"Incorrect Email or Password");
             return;
         }
+
         String role = user.getMyRole();
-    // If user's login is successful, different roles will assigned different messages
+        myFrame.dispose();
+
         if(role.equals("user")) {
             // redirect to User page
-//            JOptionPane.showMessageDialog(null, "User Taking Test Page");
             UserTakingTest.Main.main(null);
-//            myFrame.dispose();
             return;
         }
         if(role.equals("admin")) {
             // redirect to admin page
-//           JOptionPane.showMessageDialog(null, "Show Admin Setup Page");
-            AdminSetup.Main.main(null);
-            myFrame.dispose();
-          //  new SetupTest();
+            new SetupTest();
             return;
         }
         if(role.equals("therapist")) {
             // redirect to therapist page
-//            JOptionPane.showMessageDialog(null, "Show Report Page");
-            ResultReportingStartup.main(null);
-            myFrame.dispose();
+            SwingUtilities.invokeLater(ResultReportingStartup::createAndShowGui);
             return;
         }
         }

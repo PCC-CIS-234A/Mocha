@@ -1,9 +1,8 @@
 package UserLogin.Forms;
 
-import UserLogin.BusinessLogic.UserAccount_BL;
-import UserLogin.DB;
+import Database.UserAccountDB;
 import UserLogin.Main;
-import UserLogin.Objects.UserAccount;
+import SharedLogic.UserAccount;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -24,13 +23,17 @@ public class RegisterForm {
     private JPasswordField passwordTextField;
     private JPasswordField passwordConfirmField;
     private JTextField emailTextField;
-    private DB db;
+    private UserAccountDB userAccountDb;
 
     /**
      * This method communicate with UserAccount_BL to check user input
      * and it will output proper warning message to let user know what they should do
      * @return true if all the tests are passed
      */
+
+
+
+
     private Boolean RegisterData() {
 
         String strUsername = userNameField.getText();
@@ -38,7 +41,7 @@ public class RegisterForm {
         String strConfirmPassword = new String(passwordConfirmField.getPassword());
         String strEmail = emailTextField.getText();
 
-        UserAccount_BL userBL = new UserAccount_BL();
+        UserAccount_CheckForm userBL = new UserAccount_CheckForm();
 
         boolean chkNotNull = userBL.checkNotNull(strUsername,strPassword,strConfirmPassword,strEmail);
             if(chkNotNull == true){
@@ -58,7 +61,7 @@ public class RegisterForm {
                         boolean chkPasswordLength = userBL.checkPasswordLength(strPassword);
                             if(chkPasswordLength == true) {
                                 JOptionPane.showMessageDialog(null,
-                                    "Password must contain a minimum of 8 characters and a maximum of 15 character");
+                                    "Password must contain a minimum of 8 characters");
                                 passwordTextField.requestFocusInWindow();
                                 return false;
                             } else {
@@ -87,12 +90,21 @@ public class RegisterForm {
                                                     return false;
                                                 } else {
 
+                                            boolean chkPasswordSpecialCharacter = userBL.checkSpecialCharacter(strPassword);
+                                                if (chkPasswordSpecialCharacter == true) {
+                                                    JOptionPane.showMessageDialog(null,
+                                                            "Password need to have special character");
+                                                    passwordTextField.requestFocusInWindow();
+                                                    return false;
+                                                } else {
+
                                                     boolean chkMatchingPassword = userBL.checkMatchingPassword(strPassword,strConfirmPassword);
                                                         if (chkMatchingPassword == true) {
                                                             JOptionPane.showMessageDialog(null,
-                                                                "Password and confirm password are not matched");
+                                                                    "Password and confirm password are not matched");
                                                             passwordConfirmField.requestFocusInWindow();
                                                             return false;
+                                                        }
                                 }
                             }
                         }
@@ -101,8 +113,9 @@ public class RegisterForm {
             }
         }
 
-        db = new DB();
-        UserAccount result = db.insertUser(strUsername,strPassword,strEmail,"user");
+        userAccountDb = new UserAccountDB();
+        UserAccount result = userAccountDb.insertUser(strUsername,strPassword,strEmail,"user");
+        JOptionPane.showMessageDialog(null, "Registration Successful!");
         return true;
     }
 
