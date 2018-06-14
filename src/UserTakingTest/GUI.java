@@ -1,9 +1,12 @@
 package UserTakingTest;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -15,9 +18,8 @@ import java.util.Enumeration;
 
 public class GUI {
     private JPanel rootPanel;
-
-    private String item1;
-    private String item2;
+    private PicturePanel item1Image;
+    private PicturePanel item2Image;
     private int winItem;
     private int position = 0;
     private ButtonGroup radioGroup;
@@ -29,25 +31,21 @@ public class GUI {
     private JLabel itemCompareLabel;
     private JProgressBar positionProgressBar;
     private JLabel positionLabel;
-
-
     private static String mItem1 = "";
     private static String mItem2 = "";
     private static int mWin = 0;
 
-    private static int mCollectionID = 1;
-    //   private static String mTestName = "";
+    private static int mCollectionID = 3;
     private static int mUserID = 1;
     private static int mSessionID = 0;
-
     private static Test mTest;
     private static ArrayList<ItemPair> mTestQuestions;
 
     public GUI() {
-        mTest = new Test(mUserID, mCollectionID);
+        mTest = new Test(mUserID, mCollectionID, 3);
         mTestQuestions = mTest.makeRandomTestQuestions();
-        rootPanel.setPreferredSize(new Dimension(300, 200));
-        displayQuestion();
+        rootPanel.setPreferredSize(new Dimension(500, 300));
+
         ActionListener listener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -60,15 +58,20 @@ public class GUI {
             }
         };
 
+        radioGroup = new ButtonGroup();
+        radioGroup.add(item1RadioButton);
+        radioGroup.add(tieRadioButton);
+        radioGroup.add(item2RadioButton);
+
+        displayQuestion();
+
         item1RadioButton.addActionListener(listener);
         item2RadioButton.addActionListener(listener);
         tieRadioButton.addActionListener(listener);
 
         nextButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                nextQuestion();
-            }
+            public void actionPerformed(ActionEvent e) { nextQuestion(); }
         });
 
         previousButton.addActionListener(new ActionListener() {
@@ -84,7 +87,9 @@ public class GUI {
 
     private void displayQuestion() {
         ItemPair currentQuestion = mTestQuestions.get(position);
-//        radioGroup.clearSelection();
+        item1Image.setImage(currentQuestion.getItem1().getImage());
+        item2Image.setImage(currentQuestion.getItem2().getImage());
+        //      radioGroup.clearSelection();
         item1RadioButton.setText(currentQuestion.getItem1().getName());
         item2RadioButton.setText(currentQuestion.getItem2().getName());
         tieRadioButton.setText("tie");
@@ -104,8 +109,6 @@ public class GUI {
             radioGroup.clearSelection();
         }
     }
-
-
 
     private void nextQuestion() {
         position = position + 1;
@@ -141,10 +144,9 @@ public class GUI {
     private void updateProgress() {
         float pos = position;
         float questions = mTestQuestions.size() - 1;
-        int progressPercentage = (int)(100 * (pos / (questions - 1)));
+        int progressPercentage = (int)(100 * (pos / (questions)));
         positionLabel.setText("Progress: " + String.valueOf(progressPercentage) + "%");
         positionProgressBar.setValue(progressPercentage);
-
     }
 
     /**
@@ -163,32 +165,37 @@ public class GUI {
             } else if (tieRadioButton.isSelected()) {
                 winItem = 0;
             }
-            //else catch an error here?
         }
         return winItem;
     }
 
-    public String getItem1() {
-        return item1;
+    public PicturePanel getItem1Image()
+    {
+        return item1Image;
     }
 
-    public void setItem1(String item1) {
-        this.item1 = item1;
+    public void setItem1(PicturePanel item1)
+    {
+        this.item1Image = item1;
     }
 
-    public String getItem2() {
-        return item2;
+    public PicturePanel getItem2()
+    {
+        return item2Image;
     }
 
-    public void setItem2(String item2) {
-        this.item2 = item2;
+    public void setItem2(PicturePanel item2)
+    {
+        this.item2Image = item2;
     }
 
-    public int getWinItem() {
+    public int getWinItem()
+    {
         return winItem;
     }
 
-    public void setWinItem(int winItem) {
+    public void setWinItem(int winItem)
+    {
         this.winItem = winItem;
     }
 
@@ -200,7 +207,8 @@ public class GUI {
         mTestQuestions = testQuestions;
     }
 
-    public JPanel getRootPanel() {
+    public JPanel getRootPanel()
+    {
         return rootPanel;
     }
 

@@ -32,6 +32,15 @@ public class Test
         testQuestions = new ArrayList<ItemPair>();
     }
 
+    public Test(int userID, int collectionID, int testID) {
+        db = new Database();
+        this.userID = userID;
+        this.collectionID = collectionID;
+        this.testID = testID;
+        mCollection = db.readItems(collectionID);
+        testQuestions = new ArrayList<ItemPair>();
+    }
+
     /**
      * Class to make random test questions according to specifications
      * @return testQuestions - an arraylist of ItemPairs

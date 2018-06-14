@@ -6,6 +6,15 @@ import UserTakingTest.TestSession;
 
 import java.sql.*;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.*;
+//import java.sql.PreparedStatement;
+//import java.sql.SQLException;
 
 /**
  * Class to interact with the database
@@ -20,7 +29,7 @@ public class Database {
     private static final String PASSWORD = "@#$Mocha";
     private static final String CONNECTION_STRING = "jdbc:jtds:sqlserver://" + SERVER + "/" + MOCHA_DB + ";user=" + USERNAME + ";password=" + PASSWORD;
     public Connection mConnection = null;
-
+    private static final String UPDATE_ITEM = "UPDATE ITEM SET Img=? WHERE Name = ?";
     /**
      * Connects to the database
      */
@@ -127,14 +136,22 @@ public class Database {
     public ArrayList<Item> readItems(int collectionID) {
         ArrayList<Item> items = new ArrayList<>();
         connect();
-        String query = "SELECT ItemID, TestID, Name from ITEM WHERE TestID = ?";
+        String query = "SELECT ItemID, TestID, Name, Img from ITEM WHERE TestID = ?";
         try {
 
             PreparedStatement stmt = mConnection.prepareStatement(query);
             stmt.setInt(1, collectionID);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                Item item = new Item(rs.getInt("ItemID"), rs.getInt("TestID"), rs.getString("Name"));
+                InputStream stream = rs.getBinaryStream("Img");
+                BufferedImage image = null;
+                try {
+                    if (stream != null)
+                        image = ImageIO.read(stream);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Item item = new Item(rs.getInt("ItemID"), rs.getInt("TestID"), rs.getString("Name"), image);
                 items.add(item);
             }
             return items;
