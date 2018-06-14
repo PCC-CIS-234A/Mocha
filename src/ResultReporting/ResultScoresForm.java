@@ -140,7 +140,7 @@ public class ResultScoresForm {
     private void initializeStatisticsButton() {
         statisticsButton.addActionListener(e -> {
             JFrame statFrame = new JFrame("Cumulative Statistics");
-            CumulativeStatistics cumStat = new CumulativeStatistics(statFrame);
+            CumulativeStatistics cumStat = new CumulativeStatistics(statFrame, this);
             statFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
             statFrame.getContentPane().add(cumStat.getcumStatPanel());
@@ -222,8 +222,10 @@ public class ResultScoresForm {
         if (testComboBox.getItemCount() == 0) {
             JOptionPane.showMessageDialog(null, user.getMyUserName() + " has not taken any tests.");
             enableDetailedResultsButton(0); //  5/31/18 RK added call to enableDetailedResultsButton()
+            enableStatisticsButton(0); //  6/13/18 RK added call to enableStatisticsButton()
         } else {  //  5/31/18 RK added else part of if statement
             enableDetailedResultsButton(1);
+            enableStatisticsButton(1); //  6/13/18 RK added call to enableStatisticsButton()
         }
     }
 
@@ -271,6 +273,31 @@ public class ResultScoresForm {
             detailedResultsButton.setEnabled(true);
         }
 
+    }
+
+    /**
+     * 6/13/18 Rebecca Kennedy added this method
+     *
+     * Enables or disables the statisticsButton
+     * @param i
+     */
+    public void enableStatisticsButton(int i) {
+        if(i == 0) {
+            statisticsButton.setEnabled(false);
+        } else if (i == 1) {
+            statisticsButton.setEnabled(true);
+        }
+
+    }
+
+    /**
+     * 6/12/18 Rebecca Kennedy added this method
+     * Getter for getResultReportingDatabase
+     *
+     * @return getResultReportingDatabase
+     */
+    public ResultReportingDatabase getResultReportingDatabase() {
+        return resultReportingDatabase;
     }
 
     /**
